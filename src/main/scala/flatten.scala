@@ -202,8 +202,7 @@ object Flatten {
                                         case Node(job: Job, deps) =>
                                             val newNode = GraphNode(
                                                 job.jobName,
-                                                WorkflowJob(job)
-                                            )
+                                                WorkflowJob(job))
                                             newNode errorTo = after.headOption
                                             after foreach (_.before += newNode)
                                             accum += node -> newNode
@@ -335,7 +334,7 @@ object Flatten {
     }
 
     /*
-     * returns true if the two strings are the same, 
+     * returns true if the two strings are the same,
      * ignoring the last character of each if it is a digit
      */
     def nameNumMatch(name1: String, name2: String): Boolean = {
@@ -362,7 +361,7 @@ object Flatten {
         })
     }
     /*
-     * returns true if there exist at least 2 nodes in given list w/ same name 
+     * returns true if there exist at least 2 nodes in given list w/ same name
      * ignoring the last character if it is a digit)
      */
     def hasDuplicates(nodes: List[GraphNode], name: String) = {

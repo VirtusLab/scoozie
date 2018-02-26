@@ -8,7 +8,7 @@ import workflow._
 import scalaxb._
 import java.io._
 
-/* 
+/*
  * Example from the Oozie Website:
  * "The following workflow definition example executes 4 Map-Reduce jobs in 3 steps -
  * 1 job, 2 jobs in parallel and 1 job."

@@ -63,9 +63,9 @@ object Verification {
         verifiedDecisions.size == decisions.size
     }
 
-    /* 
-	 * From the Oozie spec: 
-	 * "The fork and join nodes must be used in pairs. 
+    /*
+	 * From the Oozie spec:
+	 * "The fork and join nodes must be used in pairs.
 	 * The join node assumes concurrent execution paths are children of the same fork node."
 	 * (http://oozie.apache.org/docs/3.2.0-incubating/WorkflowFunctionalSpec.html#a3.1.5_Fork_and_Join_Control_Nodes)
 	 */
@@ -192,9 +192,9 @@ object Verification {
         vNodes.find(n => n.graphNode == node).getOrElse(throw new RuntimeException("target node not contained in set of verification nodes"))
     }
 
-    /* 
-     * If a bad join can be fixed by simply adding another join, does so. 
-     * If not, returns input graph 
+    /*
+     * If a bad join can be fixed by simply adding another join, does so.
+     * If not, returns input graph
      */
     def addJoin(badJoin: VerificationNode, graph: Set[GraphNode], vNodes: Set[VerificationNode]): Set[GraphNode] = {
         var resultGraph = graph

@@ -13,8 +13,7 @@ object DecisionSamples {
     val FirstJob = MapReduceJob("foo") dependsOn Start
 
     val SomeDecision = Decision(
-        "ifBing" -> Predicates.BooleanProperty("ifBing")
-    ) dependsOn Start
+        "ifBing" -> Predicates.BooleanProperty("ifBing")) dependsOn Start
 
     val Route1 = MapReduceJob("skippingBing") dependsOn (SomeDecision default)
     val Route2 = MapReduceJob("processBing") dependsOn (SomeDecision option "ifBing")
@@ -53,8 +52,7 @@ object SimpleSamples {
     def HelloWorldWorkflow = {
         val mkHelloWorld = FsJob(
             name = "make-hello-world",
-            tasks = List(MkDir("${nameNode}/users/test/mj/oozie-fun/hello-world_${wf:id()}"))
-        ) dependsOn Start
+            tasks = List(MkDir("${nameNode}/users/test/mj/oozie-fun/hello-world_${wf:id()}"))) dependsOn Start
         val done = End dependsOn mkHelloWorld
         Workflow("hello-world-wf", done)
     }
@@ -122,35 +120,28 @@ object SimpleSamples {
         val root = "${nameNode}/users/test/mj/oozie-fun"
         val first = FsJob(
             name = "firstFs",
-            tasks = List(MkDir(s"$root/firstDir"))
-        ) dependsOn Start
+            tasks = List(MkDir(s"$root/firstDir"))) dependsOn Start
         val secondA = FsJob(
             name = "secondFsA",
-            tasks = List(MkDir(s"$root/firstDir/secondDirA"))
-        ) dependsOn first
+            tasks = List(MkDir(s"$root/firstDir/secondDirA"))) dependsOn first
         val secondB = FsJob(
             name = "secondFsB",
-            tasks = List(MkDir(s"$root/firstDir/secondDirB"))
-        ) dependsOn first
+            tasks = List(MkDir(s"$root/firstDir/secondDirB"))) dependsOn first
         val thirdA = FsJob(
             name = "thirdFsA",
-            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirA"))
-        ) dependsOn secondA
+            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirA"))) dependsOn secondA
         val thirdB = FsJob(
             name = "thirdFsB",
-            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirB"))
-        ) dependsOn secondA
+            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirB"))) dependsOn secondA
         val thirdC = FsJob(
             name = "thirdFsC",
-            tasks = List(MkDir(s"$root/firstDir/secondDirB/thirdDirC"))
-        ) dependsOn secondB
+            tasks = List(MkDir(s"$root/firstDir/secondDirB/thirdDirC"))) dependsOn secondB
         val fourth = FsJob(
             name = "fourth",
             tasks = List(
                 MkDir(s"$root/firstDir/secondDirA/thirdDirA/fourthDir"),
                 MkDir(s"$root/firstDir/secondDirA/thirdDirB/fourthDir"),
-                MkDir(s"$root/firstDir/secondDirB/thirdDirC/fourthDir"))
-        ) dependsOn (thirdA, thirdB, thirdC)
+                MkDir(s"$root/firstDir/secondDirB/thirdDirC/fourthDir"))) dependsOn (thirdA, thirdB, thirdC)
         val end = End dependsOn fourth
         Workflow("test-nested-fork-join", end)
     }
@@ -160,41 +151,34 @@ object SimpleSamples {
         val root = "${nameNode}/users/test/mj/oozie-fun"
         val first = FsJob(
             name = "firstFs",
-            tasks = List(MkDir(s"$root/firstDir"))
-        ) dependsOn Start
+            tasks = List(MkDir(s"$root/firstDir"))) dependsOn Start
         //fork-secondA-secondB
         val secondA = FsJob(
             name = "secondFsA",
-            tasks = List(MkDir(s"$root/firstDir/secondDirA"))
-        ) dependsOn first
+            tasks = List(MkDir(s"$root/firstDir/secondDirA"))) dependsOn first
         val secondB = FsJob(
             name = "secondFsB",
-            tasks = List(MkDir(s"$root/firstDir/secondDirB"))
-        ) dependsOn first
+            tasks = List(MkDir(s"$root/firstDir/secondDirB"))) dependsOn first
         //fork-thirdA-thirdB
         val thirdA = FsJob(
             name = "thirdFsA",
-            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirA"))
-        ) dependsOn secondA
+            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirA"))) dependsOn secondA
         val thirdB = FsJob(
             name = "thirdFsB",
-            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirB"))
-        ) dependsOn secondA
+            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirB"))) dependsOn secondA
         //join-thirdA-thirdB
         val fourth = FsJob(
             name = "fourth",
             tasks = List(
                 MkDir(s"$root/firstDir/secondDirA/thirdDirA/fourthDir"),
-                MkDir(s"$root/firstDir/secondDirA/thirdDirB/fourthDir"))
-        ) dependsOn (thirdA, thirdB)
+                MkDir(s"$root/firstDir/secondDirA/thirdDirB/fourthDir"))) dependsOn (thirdA, thirdB)
         //join-fourth(secondA)-secondB
         val last = FsJob(
             name = "last",
             tasks = List(
                 MkDir(s"$root/firstDir/secondDirA/thirdDirA/fourthDir/fifthDir"),
                 MkDir(s"$root/firstDir/secondDirA/thirdDirB/fourthDir/fifthDir"),
-                MkDir(s"$root/firstDir/secondDirB/fifthDir"))
-        ) dependsOn (fourth, secondB)
+                MkDir(s"$root/firstDir/secondDirB/fifthDir"))) dependsOn (fourth, secondB)
         val end = End dependsOn last
         Workflow("test-nested-fork-join-2", end)
     }
@@ -204,35 +188,28 @@ object SimpleSamples {
         val root = "${nameNode}/users/test/mj/oozie-fun"
         val first = FsJob(
             name = "firstFs",
-            tasks = List(MkDir(s"$root/firstDir"))
-        ) dependsOn Start
+            tasks = List(MkDir(s"$root/firstDir"))) dependsOn Start
         //fork-secondA-secondB
         val secondA = FsJob(
             name = "secondFsA",
-            tasks = List(MkDir(s"$root/firstDir/secondDirA"))
-        ) dependsOn first
+            tasks = List(MkDir(s"$root/firstDir/secondDirA"))) dependsOn first
         val secondB = FsJob(
             name = "secondFsB",
-            tasks = List(MkDir(s"$root/firstDir/secondDirB"))
-        ) dependsOn first
+            tasks = List(MkDir(s"$root/firstDir/secondDirB"))) dependsOn first
         //fork-thirdA-thirdB
         val thirdA = FsJob(
             name = "thirdFsA",
-            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirA"))
-        ) dependsOn secondA
+            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirA"))) dependsOn secondA
         val thirdB = FsJob(
             name = "thirdFsB",
-            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirB"))
-        ) dependsOn secondA
+            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirB"))) dependsOn secondA
         //fork-thirdC-thirdD
         val thirdC = FsJob(
             name = "thirdFsC",
-            tasks = List(MkDir(s"$root/firstDir/secondDirB/thirdDirC"))
-        ) dependsOn secondB
+            tasks = List(MkDir(s"$root/firstDir/secondDirB/thirdDirC"))) dependsOn secondB
         val thirdD = FsJob(
             name = "thirdFsD",
-            tasks = List(MkDir(s"$root/firstDir/secondDirB/thirdDirD"))
-        ) dependsOn secondB
+            tasks = List(MkDir(s"$root/firstDir/secondDirB/thirdDirD"))) dependsOn secondB
         //join
         val end = End dependsOn (thirdA, thirdB, thirdC, thirdD)
         Workflow("test-nested-fork-join-3", end)
@@ -243,33 +220,27 @@ object SimpleSamples {
         val root = "${nameNode}/users/test/mj/oozie-fun"
         val first = FsJob(
             name = "firstFs",
-            tasks = List(MkDir(s"$root/firstDir"))
-        ) dependsOn Start
+            tasks = List(MkDir(s"$root/firstDir"))) dependsOn Start
         //fork-secondA-secondB
         val secondA = FsJob(
             name = "secondFsA",
-            tasks = List(MkDir(s"$root/firstDir/secondDirA"))
-        ) dependsOn first
+            tasks = List(MkDir(s"$root/firstDir/secondDirA"))) dependsOn first
         val secondB = FsJob(
             name = "secondFsB",
-            tasks = List(MkDir(s"$root/firstDir/secondDirB"))
-        ) dependsOn first
+            tasks = List(MkDir(s"$root/firstDir/secondDirB"))) dependsOn first
         //fork-thirdA-thirdB
         val thirdA = FsJob(
             name = "thirdFsA",
-            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirA"))
-        ) dependsOn secondA
+            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirA"))) dependsOn secondA
         val thirdB = FsJob(
             name = "thirdFsB",
-            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirB"))
-        ) dependsOn secondA
+            tasks = List(MkDir(s"$root/firstDir/secondDirA/thirdDirB"))) dependsOn secondA
         //join-thirdB-secondB
         val fourth = FsJob(
             name = "fourth",
             tasks = List(
                 MkDir(s"$root/firstDir/secondDirA/thirdDirB/fourthDir"),
-                MkDir(s"$root/firstDir/secondDirB/fourthDir"))
-        ) dependsOn (thirdB, secondB)
+                MkDir(s"$root/firstDir/secondDirB/fourthDir"))) dependsOn (thirdB, secondB)
         //join-thirdA-fourth
         val end = End dependsOn (thirdA, fourth)
         Workflow("test-nested-fork-join-4", end)
@@ -329,8 +300,7 @@ object SimpleSamples {
     def DecisionExample = {
         val first = MapReduceJob("first") dependsOn Start
         val decision = Decision(
-            "route1" -> Predicates.BooleanProperty("${doRoute1}")
-        ) dependsOn first
+            "route1" -> Predicates.BooleanProperty("${doRoute1}")) dependsOn first
         val route1Start = MapReduceJob("r1Start") dependsOn (decision option "route1")
         val route1End = MapReduceJob("r1End") dependsOn route1Start
         val route2Start = MapReduceJob("r2Start") dependsOn (decision default)

@@ -13,7 +13,7 @@ import com.google.common.base._
 import verification._
 
 case class PartiallyOrderedNode(
-    node: GraphNode,
+    node:         GraphNode,
     partialOrder: Int)
 
 case object PartiallyOrderedNode {
@@ -23,14 +23,14 @@ case object PartiallyOrderedNode {
 }
 
 case class GraphNode(
-    var name: String,
+    var name:           String,
     var workflowOption: WorkflowOption,
-    var before: RefSet[GraphNode],
-    var after: RefSet[GraphNode],
-    var decisionBefore: RefSet[GraphNode] = RefSet(),
-    var decisionAfter: RefSet[GraphNode] = RefSet(),
+    var before:         RefSet[GraphNode],
+    var after:          RefSet[GraphNode],
+    var decisionBefore: RefSet[GraphNode]           = RefSet(),
+    var decisionAfter:  RefSet[GraphNode]           = RefSet(),
     var decisionRoutes: Set[(String, DecisionNode)] = Set.empty,
-    var errorTo: Option[GraphNode] = None) {
+    var errorTo:        Option[GraphNode]           = None) {
 
     def getName(n: GraphNode) = n.name
 

@@ -12,12 +12,13 @@ case class MapReduceJob(name: String, prepare: List[FsTask] = List.empty, config
     override val jobName = s"mr_$name"
 }
 
-case class HiveJob(fileName: String,
-                   configuration: ArgList = Nil,
-                   parameters: List[String] = List.empty,
-                   prepare: List[FsTask] = List.empty,
-                   jobXml: Option[Seq[String]] = None,
-                   otherFiles: Option[Seq[String]] = None) extends Job {
+case class HiveJob(
+    fileName:      String,
+    configuration: ArgList             = Nil,
+    parameters:    List[String]        = List.empty,
+    prepare:       List[FsTask]        = List.empty,
+    jobXml:        Option[Seq[String]] = None,
+    otherFiles:    Option[Seq[String]] = None) extends Job {
     val dotIndex = fileName.indexOf(".")
     val cleanName = {
         if (dotIndex > 0)
@@ -28,7 +29,7 @@ case class HiveJob(fileName: String,
     override val jobName = s"hive_$cleanName"
 }
 
-// Node: There is a limitation with the way scalaxb creates the FS Task 
+// Node: There is a limitation with the way scalaxb creates the FS Task
 // case classes from workflow.xsd: It treats the different task types as
 // separate sequences so ordering among the types is not possible.
 // Need to address later.

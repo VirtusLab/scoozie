@@ -21,7 +21,7 @@ import java.util.Date
 case class OozieConfig(oozieUrl: String, properties: Map[String, String])
 
 abstract class ScoozieApp(
-    wf: Workflow,
+    wf:             Workflow,
     propertiesFile: String,
     postprocessing: Option[XmlPostProcessing] = Some(XmlPostProcessing.Default)) extends App {
 
@@ -194,8 +194,7 @@ case class XmlPostProcessing(
 object XmlPostProcessing {
     val Default = XmlPostProcessing(
         substitutions = Map(
-            "&quot;" -> "\"")
-    )
+            "&quot;" -> "\""))
 }
 
 case class OozieSuccess(jobId: String)

@@ -16,8 +16,7 @@ version := "0.5.6"
 
 scalaVersion := "2.10.4"
 
-mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
-    {
+mergeStrategy in assembly := {
         case PathList("META-INF", xs @ _*) =>
             (xs map {_.toLowerCase}) match {
                 case "services" :: xs => MergeStrategy.filterDistinctLines
@@ -26,7 +25,6 @@ mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
         }
         case _ => MergeStrategy.first
     }
-}
 
 libraryDependencies ++= Seq(
     "org.specs2" %% "specs2-core" % "2.4.11" % "test",
@@ -43,20 +41,24 @@ resolvers ++= Seq(
     "cloudera" at "https://repository.cloudera.com/artifactory/public"
 )
 
-scalariformSettings
+scalariformAutoformat := true
 
-ScalariformKeys.preferences := FormattingPreferences().
-    setPreference(AlignParameters, true).
-    setPreference(IndentSpaces, 4).
-    setPreference(AlignSingleLineCaseStatements, true).
-    setPreference(PreserveDanglingCloseParenthesis, true).
-    setPreference(PreserveSpaceBeforeArguments, true)
+scalariformPreferences := scalariformPreferences.value
+  .setPreference(AlignParameters, true)
+  .setPreference(IndentSpaces, 4)
+  .setPreference(AlignSingleLineCaseStatements, true)
+  .setPreference(PreserveSpaceBeforeArguments, true)
+
+//todo update scalaxb
+//enablePlugins(ScalaxbPlugin)
+//scalaxbPackageName in (Compile, scalaxb) := "workflow"
 
 scalaxbSettings
- 
-sourceGenerators in Compile <+= scalaxb in Compile
+
+sourceGenerators in Compile += scalaxb in Compile
 
 packageName in scalaxb in Compile := "workflow"
+
 
 scalacOptions ++= Seq(
     "-unchecked",

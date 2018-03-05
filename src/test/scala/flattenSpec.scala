@@ -234,8 +234,7 @@ class FlattenSpec extends Specification {
             val (complexDecision, dec) = {
                 val rando = NoOpJob("rando") dependsOn Start
                 val first = Decision(
-                    "foo" -> Predicates.BooleanProperty("bar")
-                ) dependsOn rando
+                    "foo" -> Predicates.BooleanProperty("bar")) dependsOn rando
                 val end = End dependsOn OneOf(first default, first option "foo")
                 Workflow("complex-decisions", end) -> first
             }
@@ -254,8 +253,7 @@ class FlattenSpec extends Specification {
         "work for decision with both routes going to same place not end" in {
             val (complexDecision, dec) = {
                 val first = Decision(
-                    "foo" -> Predicates.BooleanProperty("bar")
-                ) dependsOn Start
+                    "foo" -> Predicates.BooleanProperty("bar")) dependsOn Start
                 val foo = NoOpJob("foo") dependsOn OneOf(first default, first option "foo")
                 val end = End dependsOn foo
                 Workflow("complex-decisions", end) -> first
@@ -315,11 +313,9 @@ class FlattenSpec extends Specification {
             val ((multipleDecision, dec1), dec2) = {
                 val first = NoOpJob("first") dependsOn Start
                 val dec = Decision(
-                    "route1" -> Predicates.AlwaysTrue
-                ) dependsOn first
+                    "route1" -> Predicates.AlwaysTrue) dependsOn first
                 val dec2 = Decision(
-                    "route1" -> Predicates.AlwaysTrue
-                ) dependsOn (dec default)
+                    "route1" -> Predicates.AlwaysTrue) dependsOn (dec default)
                 val job = NoOpJob("job") dependsOn (dec2 default)
                 val job2 = NoOpJob("job2") dependsOn (dec2 option "route1")
                 val job3 = NoOpJob("job3") dependsOn (dec option "route1")
@@ -476,8 +472,7 @@ class FlattenSpec extends Specification {
             val ((decisionAndSugarOption, dec1), dec2) = {
                 val first = NoOpJob("first") dependsOn Start
                 val decision = Decision(
-                    "route1" -> Predicates.AlwaysTrue
-                ) dependsOn first
+                    "route1" -> Predicates.AlwaysTrue) dependsOn first
                 val option = NoOpJob("option") dependsOn (decision option "route1") doIf "doOption"
                 val default = NoOpJob("default") dependsOn Optional(option)
                 val default2 = NoOpJob("default2") dependsOn OneOf(decision default, default)
@@ -579,8 +574,7 @@ class FlattenSpec extends Specification {
 
             val (wfWithTwoEndNodes, dec) = {
                 val decision = Decision(
-                    "option" -> Predicates.BooleanProperty("${doOption}")
-                ) dependsOn Start
+                    "option" -> Predicates.BooleanProperty("${doOption}")) dependsOn Start
                 val option = NoOpJob("option") dependsOn (decision option "option")
                 val default = NoOpJob("default") dependsOn (decision default)
                 val end = End dependsOn OneOf(option, default)

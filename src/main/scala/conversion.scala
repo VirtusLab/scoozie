@@ -107,33 +107,34 @@ case class GraphNode(
         workflowOption match {
             case WorkflowFork =>
                 Set(DataRecord(None, Some("fork"), FORK(
-                    path = (afterNames.toSeq map FORK_TRANSITION.apply).toList,
-                    name = name)))
+                    path = afterNames.toSeq.map(start => FORK_TRANSITION.apply(Map("@start" -> DataRecord(start)))).toList,
+                    attributes = Map("@name" -> DataRecord(name)))))
             case WorkflowJoin =>
-                Set(DataRecord(None, Some("join"), JOIN(
-                    name = name,
-                    to = okTransition)))
+                Set(DataRecord(None, Some("join"), JOIN(attributes = Map(
+                    "@name" -> DataRecord(name),
+                    "@to" -> DataRecord(okTransition)))))
             case WorkflowJob(job) =>
+                val to = errorTo match {
+                    case Some(node) => node.name
+                    case _          => "kill"
+                }
                 Set(DataRecord(None, Some("action"), ACTION(
-                    name = name,
                     actionoption = Conversion convertJob job,
-                    ok = ACTION_TRANSITION(okTransition),
-                    error = ACTION_TRANSITION(errorTo match {
-                        case Some(node) => node.name
-                        case _          => "kill"
-                    }))))
+                    ok = ACTION_TRANSITION(Map("@to" -> DataRecord(okTransition))),
+                    error = ACTION_TRANSITION(Map("@to" -> DataRecord(to))),
+                    attributes = Map("@name" -> DataRecord(name)))))
             case WorkflowDecision(predicates, _) =>
                 val defaultName = getDecisionRouteName("default")
                 val caseSeq = predicates map (pred => {
                     val route = getDecisionRouteName(pred._1)
-                    CASE(Conversion convertPredicate pred._2, route)
+                    CASE(Conversion convertPredicate pred._2, Map("@to" -> DataRecord(route)))
                 })
                 Set(DataRecord(None, Some("decision"), DECISION(
-                    name = name,
                     switch = SWITCH(
                         switchsequence1 = SWITCHSequence1(
                             caseValue = caseSeq,
-                            default = DEFAULT(defaultName))))))
+                            default = DEFAULT(Map("@to" -> DataRecord(defaultName))))),
+                    attributes = Map("@name" -> DataRecord(name)))))
             case _ => ???
         }
     }
@@ -170,12 +171,12 @@ object Conversion {
             case _          => "end"
         }
         WORKFLOWu45APP(
-            name = workflow.name,
             workflowu45appoption = workflowOptions.toList :+ DataRecord(None, Some("kill"), KILL(
                 message = workflow.name + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                name = "kill")),
-            start = START(startTo),
-            end = END("end"))
+                attributes = Map("@name" -> DataRecord("kill")))),
+            start = START(attributes = Map("@to" -> DataRecord(startTo))),
+            end = END(attributes = Map("@name" -> DataRecord("end"))),
+            attributes = Map("@name" -> DataRecord(workflow.name)))
     }
 
     def convertJob(job: Job): DataRecord[Any] = job match {
@@ -190,16 +191,16 @@ object Conversion {
             DataRecord(None, Some("hive"), ACTIONType(
                 jobu45tracker = JobTracker,
                 nameu45node = NameNode,
+                prepare = getPrepare(prep),
                 jobu45xml = jobXml match {
                     case Some(xml) => xml
                     case _         => Seq[String]()
                 },
                 configuration = getConfiguration(config),
                 script = fileName,
-                param = params.toSeq,
-                prepare = getPrepare(prep),
+                param = params,
                 file = otherFiles.getOrElse(Nil),
-                xmlns = "uri:oozie:hive-action:0.2"))
+                attributes = Map("@xmlns" -> DataRecord("uri:oozie:hive-action:0.2"))))
 
         case JavaJob(mainClass, prep, config, jvmOps, args) =>
             DataRecord(None, Some("java"), JAVA(
@@ -215,31 +216,34 @@ object Conversion {
         case FsJob(name, tasks) =>
             DataRecord(None, Some("fs"), FS(
                 delete = tasks flatMap {
-                    case Rm(path) => Some(DELETE(path))
+                    case Rm(path) => Some(DELETE(Map("@path" -> DataRecord(path))))
                     case _        => None
                 },
                 mkdir = tasks flatMap {
-                    case MkDir(path) => Some(MKDIR(path))
+                    case MkDir(path) => Some(MKDIR(Map("@path" -> DataRecord(path))))
                     case _           => None
                 },
                 move = tasks flatMap {
-                    case Mv(from, to) => Some(MOVE(from, to))
+                    case Mv(from, to) => Some(MOVE(Map("@source" -> DataRecord(from), "@target" -> DataRecord(to))))
                     case _            => None
                 },
                 chmod = tasks flatMap {
-                    case ChMod(path, permissions, dirFiles) => Some(CHMOD(path, permissions, Some(dirFiles)))
-                    case _                                  => None
+                    case ChMod(path, permissions, dirFiles) => Some(CHMOD(Map(
+                        "@path" -> DataRecord(path),
+                        "@permissions" -> DataRecord(permissions),
+                        "@dir-files" -> DataRecord(dirFiles))))
+                    case _ => None
                 }))
         case _ => ???
     }
 
     def getPrepare(prep: List[FsTask]) = {
         val deletes: Seq[DELETE] = prep flatMap {
-            case Rm(path) => Some(DELETE(path))
+            case Rm(path) => Some(DELETE(Map("@path" -> DataRecord(path))))
             case _        => None
         }
         val mkdirs: Seq[MKDIR] = prep flatMap {
-            case MkDir(path) => Some(MKDIR(path))
+            case MkDir(path) => Some(MKDIR(Map("@path" -> DataRecord(path))))
             case _           => None
         }
         if (!(deletes.isEmpty && mkdirs.isEmpty))

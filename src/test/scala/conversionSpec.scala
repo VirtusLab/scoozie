@@ -12,26 +12,46 @@ import scalaxb._
 import org.specs2.mutable._
 
 class ConversionSpec extends Specification {
+
+    implicit class ACTION_TRANSITION_ENRICHED(at: ACTION_TRANSITION.type) {
+        def apply(to: String) = ACTION_TRANSITION(Map("@to" -> DataRecord(to)))
+    }
+
+    implicit class FORK_TRANSITION_ENRICHED(at: FORK_TRANSITION.type) {
+        def apply(start: String) = FORK_TRANSITION(Map("@start" -> DataRecord(start)))
+    }
+
+    implicit class START_ENRICHED(start: START.type) {
+        def apply(to: String) = START(Map("@to" -> DataRecord(to)))
+    }
+
+    implicit class DEFAULT_ENRICHED(default: DEFAULT.type) {
+        def apply(to: String) = DEFAULT(Map("@to" -> DataRecord(to)))
+    }
+
+    implicit class END_ENRICHED(end: END.type) {
+        def apply(name: String) = END(Map("@name" -> DataRecord(name)))
+    }
+
     "Conversion" should {
 
         "give empty result for empty Workflow" in {
             val wf = WORKFLOWu45APP(
-                name = "empty",
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("kill"), KILL(
                         message = "empty" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        Map("@name" -> DataRecord("kill"))))),
                 start = START("end"),
-                end = END("end"))
+                end = END("end"),
+                attributes = Map("@name" -> DataRecord("empty")))
             Conversion(EmptyWorkflow) must_== wf
         }
 
         "give Workflow with single node for single Workflow" in {
             val wf = WORKFLOWu45APP(
-                name = "single",
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_start",
+                        attributes = Map("@name" -> DataRecord("mr_start")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -39,40 +59,40 @@ class ConversionSpec extends Specification {
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("kill"), KILL(
                         message = "single" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        attributes = Map("@name" -> DataRecord("kill"))))),
                 start = START("mr_start"),
-                end = END("end"))
+                end = END("end"),
+                attributes = Map("@name" -> DataRecord("single")))
 
             Conversion(SingleWorkflow) must_== wf
         }
 
         "give workflow with 4 sequential jobs" in {
             val wf = WORKFLOWu45APP(
-                name = "simple",
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_first",
+                        attributes = Map("@name" -> DataRecord("mr_first")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_second"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_second",
+                        attributes = Map("@name" -> DataRecord("mr_second")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_third"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_third",
+                        attributes = Map("@name" -> DataRecord("mr_third")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_fourth"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_fourth",
+                        attributes = Map("@name" -> DataRecord("mr_fourth")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -80,19 +100,20 @@ class ConversionSpec extends Specification {
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("kill"), KILL(
                         message = "simple" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        attributes = Map("@name" -> DataRecord("kill"))))),
                 start = START("mr_first"),
-                end = END("end"))
+                end = END("end"),
+                attributes = Map("@name" -> DataRecord("simple")))
 
             Conversion(SimpleWorkflow) must_== wf
         }
 
         "give workflow with 2 jobs running in parallel" in {
             val wf = WORKFLOWu45APP(
-                name = "simple-fork-join",
+                attributes = Map("@name" -> DataRecord("simple-fork-join")),
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_first",
+                        attributes = Map("@name" -> DataRecord("mr_first")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -102,27 +123,26 @@ class ConversionSpec extends Specification {
                         path = Seq(
                             FORK_TRANSITION("mr_secondA"),
                             FORK_TRANSITION("mr_secondB")),
-                        name = "fork-mr_secondA-mr_secondB")),
+                        attributes = Map("@name" -> DataRecord("fork-mr_secondA-mr_secondB")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_secondA",
+                        attributes = Map("@name" -> DataRecord("mr_secondA")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_secondA-mr_secondB"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_secondB",
+                        attributes = Map("@name" -> DataRecord("mr_secondB")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_secondA-mr_secondB"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("join"), JOIN(
-                        name = "join-mr_secondA-mr_secondB",
-                        to = "end")),
+                        Map("@name" -> DataRecord("join-mr_secondA-mr_secondB"), "@to" -> DataRecord("end")))),
                     DataRecord(None, Some("kill"), KILL(
                         message = "simple-fork-join" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        attributes = Map("@name" -> DataRecord("kill"))))),
                 start = START("mr_first"),
                 end = END("end"))
 
@@ -131,10 +151,10 @@ class ConversionSpec extends Specification {
 
         "give workflow with 1 job, decision, then two more jobs" in {
             val wf = WORKFLOWu45APP(
-                name = "simple-decision",
+                attributes = Map("@name" -> DataRecord("simple-decision")),
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_first",
+                        attributes = Map("@name" -> DataRecord("mr_first")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -146,26 +166,26 @@ class ConversionSpec extends Specification {
                                 caseValue = Seq(
                                     CASE(
                                         value = "true",
-                                        to = "mr_option")),
+                                        attributes = Map("@to" -> DataRecord("mr_option")))),
                                 default = DEFAULT(
-                                    to = "mr_default"))),
-                        name = "decision-mr_default-mr_option")),
+                                    attributes = Map("@to" -> DataRecord("mr_default"))))),
+                        attributes = Map("@name" -> DataRecord("decision-mr_default-mr_option")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_default",
+                        attributes = Map("@name" -> DataRecord("mr_default")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_second"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_option",
+                        attributes = Map("@name" -> DataRecord("mr_option")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_second"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_second",
+                        attributes = Map("@name" -> DataRecord("mr_second")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -173,7 +193,7 @@ class ConversionSpec extends Specification {
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("kill"), KILL(
                         message = "simple-decision" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        attributes = Map("@name" -> DataRecord("kill"))))),
                 start = START("mr_first"),
                 end = END("end"))
 
@@ -182,45 +202,45 @@ class ConversionSpec extends Specification {
 
         "give workflow with 1 job, then sub workflow, then 1 more job" in {
             val wf = WORKFLOWu45APP(
-                name = "simple-sub-workflow",
+                attributes = Map("@name" -> DataRecord("simple-sub-workflow")),
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_begin",
+                        attributes = Map("@name" -> DataRecord("mr_begin")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_first"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_first",
+                        attributes = Map("@name" -> DataRecord("mr_first")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_second"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_second",
+                        attributes = Map("@name" -> DataRecord("mr_second")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_third"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_third",
+                        attributes = Map("@name" -> DataRecord("mr_third")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_fourth"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_fourth",
+                        attributes = Map("@name" -> DataRecord("mr_fourth")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_final"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_final",
+                        attributes = Map("@name" -> DataRecord("mr_final")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -228,7 +248,7 @@ class ConversionSpec extends Specification {
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("kill"), KILL(
                         message = "simple-sub-workflow" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        attributes = Map("@name" -> DataRecord("kill"))))),
                 start = START("mr_begin"),
                 end = END("end"))
 
@@ -237,10 +257,10 @@ class ConversionSpec extends Specification {
 
         "give workflow with two separate fork / joins" in {
             val wf = WORKFLOWu45APP(
-                name = "two-simple-fork-joins",
+                attributes = Map("@name" -> DataRecord("two-simple-fork-joins")),
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_first",
+                        attributes = Map("@name" -> DataRecord("mr_first")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -250,26 +270,26 @@ class ConversionSpec extends Specification {
                         path = Seq(
                             FORK_TRANSITION("mr_secondA"),
                             FORK_TRANSITION("mr_secondB")),
-                        name = "fork-mr_secondA-mr_secondB")),
+                        attributes = Map("@name" -> DataRecord("fork-mr_secondA-mr_secondB")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_secondA",
+                        attributes = Map("@name" -> DataRecord("mr_secondA")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_secondA-mr_secondB"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_secondB",
+                        attributes = Map("@name" -> DataRecord("mr_secondB")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_secondA-mr_secondB"),
                         error = ACTION_TRANSITION("kill"))),
-                    DataRecord(None, Some("join"), JOIN(
-                        name = "join-mr_secondA-mr_secondB",
-                        to = "mr_third")),
+                    DataRecord(None, Some("join"), JOIN(attributes = Map(
+                        "@name" -> DataRecord("join-mr_secondA-mr_secondB"),
+                        "@to" -> DataRecord("mr_third")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_third",
+                        attributes = Map("@name" -> DataRecord("mr_third")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -279,27 +299,27 @@ class ConversionSpec extends Specification {
                         path = Seq(
                             FORK_TRANSITION("mr_fourthA"),
                             FORK_TRANSITION("mr_fourthB")),
-                        name = "fork-mr_fourthA-mr_fourthB")),
+                        attributes = Map("@name" -> DataRecord("fork-mr_fourthA-mr_fourthB")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_fourthA",
+                        attributes = Map("@name" -> DataRecord("mr_fourthA")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_fourthA-mr_fourthB"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_fourthB",
+                        attributes = Map("@name" -> DataRecord("mr_fourthB")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_fourthA-mr_fourthB"),
                         error = ACTION_TRANSITION("kill"))),
-                    DataRecord(None, Some("join"), JOIN(
-                        name = "join-mr_fourthA-mr_fourthB",
-                        to = "end")),
+                    DataRecord(None, Some("join"), JOIN(attributes = Map(
+                        "@name" -> DataRecord("join-mr_fourthA-mr_fourthB"),
+                        "@to" -> DataRecord("end")))),
                     DataRecord(None, Some("kill"), KILL(
                         message = "two-simple-fork-joins" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        attributes = Map("@name" -> DataRecord("kill"))))),
                 start = START("mr_first"),
                 end = END("end"))
 
@@ -308,10 +328,10 @@ class ConversionSpec extends Specification {
 
         "give workflow with nested fork / joins" in {
             val wf = WORKFLOWu45APP(
-                name = "nested-fork-join",
+                attributes = Map("@name" -> DataRecord("nested-fork-join")),
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_first",
+                        attributes = Map("@name" -> DataRecord("mr_first")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -321,16 +341,16 @@ class ConversionSpec extends Specification {
                         path = Seq(
                             FORK_TRANSITION("mr_secondA"),
                             FORK_TRANSITION("mr_secondB")),
-                        name = "fork-mr_secondA-mr_secondB")),
+                        attributes = Map("@name" -> DataRecord("fork-mr_secondA-mr_secondB")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_secondA",
+                        attributes = Map("@name" -> DataRecord("mr_secondA")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("fork-mr_thirdA-mr_thirdB"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_secondB",
+                        attributes = Map("@name" -> DataRecord("mr_secondB")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -340,44 +360,44 @@ class ConversionSpec extends Specification {
                         path = Seq(
                             FORK_TRANSITION("mr_thirdA"),
                             FORK_TRANSITION("mr_thirdB")),
-                        name = "fork-mr_thirdA-mr_thirdB")),
+                        attributes = Map("@name" -> DataRecord("fork-mr_thirdA-mr_thirdB")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_thirdC",
+                        attributes = Map("@name" -> DataRecord("mr_thirdC")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_fourth-mr_thirdC"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_thirdA",
+                        attributes = Map("@name" -> DataRecord("mr_thirdA")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_thirdA-mr_thirdB"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_thirdB",
+                        attributes = Map("@name" -> DataRecord("mr_thirdB")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_thirdA-mr_thirdB"),
                         error = ACTION_TRANSITION("kill"))),
-                    DataRecord(None, Some("join"), JOIN(
-                        name = "join-mr_thirdA-mr_thirdB",
-                        to = "mr_fourth")),
+                    DataRecord(None, Some("join"), JOIN(attributes = Map(
+                        "@name" -> DataRecord("join-mr_thirdA-mr_thirdB"),
+                        "@to" -> DataRecord("mr_fourth")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_fourth",
+                        attributes = Map("@name" -> DataRecord("mr_fourth")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_fourth-mr_thirdC"),
                         error = ACTION_TRANSITION("kill"))),
-                    DataRecord(None, Some("join"), JOIN(
-                        name = "join-mr_fourth-mr_thirdC",
-                        to = "end")),
+                    DataRecord(None, Some("join"), JOIN(attributes = Map(
+                        "@name" -> DataRecord("join-mr_fourth-mr_thirdC"),
+                        "@to" -> DataRecord("end")))),
                     DataRecord(None, Some("kill"), KILL(
                         message = "nested-fork-join" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        attributes = Map("@name" -> DataRecord("kill"))))),
                 start = START("mr_first"),
                 end = END("end"))
 
@@ -386,38 +406,38 @@ class ConversionSpec extends Specification {
 
         "give workflow with subworkflow, including fork joins" in {
             val wf = WORKFLOWu45APP(
-                name = "sub-fork-join",
+                attributes = Map("@name" -> DataRecord("sub-fork-join")),
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_start",
+                        attributes = Map("@name" -> DataRecord("mr_start")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_first"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_first",
+                        attributes = Map("@name" -> DataRecord("mr_first")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_second"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_second",
+                        attributes = Map("@name" -> DataRecord("mr_second")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_third"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_third",
+                        attributes = Map("@name" -> DataRecord("mr_third")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_fourth"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_fourth",
+                        attributes = Map("@name" -> DataRecord("mr_fourth")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -427,27 +447,27 @@ class ConversionSpec extends Specification {
                         path = Seq(
                             FORK_TRANSITION("mr_thirdA"),
                             FORK_TRANSITION("mr_thirdB")),
-                        name = "fork-mr_thirdA-mr_thirdB")),
+                        attributes = Map("@name" -> DataRecord("fork-mr_thirdA-mr_thirdB")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_thirdA",
+                        attributes = Map("@name" -> DataRecord("mr_thirdA")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_thirdA-mr_thirdB"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_thirdB",
+                        attributes = Map("@name" -> DataRecord("mr_thirdB")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_thirdA-mr_thirdB"),
                         error = ACTION_TRANSITION("kill"))),
-                    DataRecord(None, Some("join"), JOIN(
-                        name = "join-mr_thirdA-mr_thirdB",
-                        to = "end")),
+                    DataRecord(None, Some("join"), JOIN(attributes = Map(
+                        "@name" -> DataRecord("join-mr_thirdA-mr_thirdB"),
+                        "@to" -> DataRecord("end")))),
                     DataRecord(None, Some("kill"), KILL(
                         message = "sub-fork-join" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        attributes = Map("@name" -> DataRecord("kill"))))),
                 start = START("mr_start"),
                 end = END("end"))
 
@@ -456,10 +476,10 @@ class ConversionSpec extends Specification {
 
         "give workflow with duplicate nodes" in {
             val wf = WORKFLOWu45APP(
-                name = "duplicate-nodes",
+                attributes = Map("@name" -> DataRecord("duplicate-nodes")),
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_first",
+                        attributes = Map("@name" -> DataRecord("mr_first")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -469,27 +489,27 @@ class ConversionSpec extends Specification {
                         path = Seq(
                             FORK_TRANSITION("mr_second"),
                             FORK_TRANSITION("mr_second2")),
-                        name = "fork-mr_second-mr_second2")),
+                        attributes = Map("@name" -> DataRecord("fork-mr_second-mr_second2")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_second",
+                        attributes = Map("@name" -> DataRecord("mr_second")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_second-mr_second2"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_second2",
+                        attributes = Map("@name" -> DataRecord("mr_second2")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("join-mr_second-mr_second2"),
                         error = ACTION_TRANSITION("kill"))),
-                    DataRecord(None, Some("join"), JOIN(
-                        name = "join-mr_second-mr_second2",
-                        to = "end")),
+                    DataRecord(None, Some("join"), JOIN(attributes = Map(
+                        "@name" -> DataRecord("join-mr_second-mr_second2"),
+                        "@to" -> DataRecord("end")))),
                     DataRecord(None, Some("kill"), KILL(
                         message = "duplicate-nodes" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        attributes = Map("@name" -> DataRecord("kill"))))),
                 start = START("mr_first"),
                 end = END("end"))
 
@@ -498,10 +518,10 @@ class ConversionSpec extends Specification {
 
         "give workflow with syntactically sugared decision" in {
             val wf = WORKFLOWu45APP(
-                name = "sugar-option-decision",
+                attributes = Map("@name" -> DataRecord("sugar-option-decision")),
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_first",
+                        attributes = Map("@name" -> DataRecord("mr_first")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -513,19 +533,18 @@ class ConversionSpec extends Specification {
                                 caseValue = Seq(
                                     CASE(
                                         value = "${doOption}",
-                                        to = "mr_option")),
-                                default = DEFAULT(
-                                    to = "mr_second"))),
-                        name = "decision-mr_second-mr_option")),
+                                        attributes = Map("@to" -> DataRecord("mr_option")))),
+                                default = DEFAULT("mr_second"))),
+                        attributes = Map("@name" -> DataRecord("decision-mr_second-mr_option")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_option",
+                        attributes = Map("@name" -> DataRecord("mr_option")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_second"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_second",
+                        attributes = Map("@name" -> DataRecord("mr_second")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -533,7 +552,7 @@ class ConversionSpec extends Specification {
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("kill"), KILL(
                         message = "sugar-option-decision" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        attributes = Map("@name" -> DataRecord("kill"))))),
                 start = START("mr_first"),
                 end = END("end"))
 
@@ -542,10 +561,10 @@ class ConversionSpec extends Specification {
 
         "give workflow with regular decision and syntactically sugared decision" in {
             val wf = WORKFLOWu45APP(
-                name = "mixed-decision-styles",
+                attributes = Map("@name" -> DataRecord("mixed-decision-styles")),
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_first",
+                        attributes = Map("@name" -> DataRecord("mr_first")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -557,36 +576,34 @@ class ConversionSpec extends Specification {
                                 caseValue = Seq(
                                     CASE(
                                         value = "true",
-                                        to = "decision-mr_default-mr_option")),
-                                default = DEFAULT(
-                                    to = "mr_default2"))),
-                        name = "decision-mr_default2-decision-mr_default-mr_---")),
+                                        attributes = Map("@to" -> DataRecord("decision-mr_default-mr_option")))),
+                                default = DEFAULT("mr_default2"))),
+                        attributes = Map("@name" -> DataRecord("decision-mr_default2-decision-mr_default-mr_---")))),
                     DataRecord(None, Some("decision"), DECISION(
                         switch = SWITCH(
                             switchsequence1 = SWITCHSequence1(
                                 caseValue = Seq(
                                     CASE(
                                         value = "${doOption}",
-                                        to = "mr_option")),
-                                default = DEFAULT(
-                                    to = "mr_default"))),
-                        name = "decision-mr_default-mr_option")),
+                                        attributes = Map("@to" -> DataRecord("mr_option")))),
+                                default = DEFAULT("mr_default"))),
+                        attributes = Map("@name" -> DataRecord("decision-mr_default-mr_option")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_option",
+                        attributes = Map("@name" -> DataRecord("mr_option")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_default"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_default",
+                        attributes = Map("@name" -> DataRecord("mr_default")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_default2"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_default2",
+                        attributes = Map("@name" -> DataRecord("mr_default2")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -594,7 +611,7 @@ class ConversionSpec extends Specification {
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("kill"), KILL(
                         message = "mixed-decision-styles" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        attributes = Map("@name" -> DataRecord("kill"))))),
                 start = START("mr_first"),
                 end = END("end"))
 
@@ -603,24 +620,24 @@ class ConversionSpec extends Specification {
 
         "give workflow with custom error-to message" in {
             val wf = WORKFLOWu45APP(
-                name = "custom-errorTo",
+                attributes = Map("@name" -> DataRecord("custom-errorTo")),
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_first",
+                        attributes = Map("@name" -> DataRecord("mr_first")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_second"),
                         error = ACTION_TRANSITION("mr_errorOption"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_errorOption",
+                        attributes = Map("@name" -> DataRecord("mr_errorOption")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("end"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_second",
+                        attributes = Map("@name" -> DataRecord("mr_second")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -628,7 +645,7 @@ class ConversionSpec extends Specification {
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("kill"), KILL(
                         message = "custom-errorTo" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        attributes = Map("@name" -> DataRecord("kill"))))),
                 start = START("mr_first"),
                 end = END("end"))
 
@@ -637,7 +654,7 @@ class ConversionSpec extends Specification {
 
         "give workflow with sub-workflow ending in sugar decision option" in {
             val wf = WORKFLOWu45APP(
-                name = "sub-wf-ending-with-sugar-option",
+                attributes = Map("@name" -> DataRecord("sub-wf-ending-with-sugar-option")),
                 workflowu45appoption = Seq(
                     DataRecord(None, Some("decision"), DECISION(
                         switch = SWITCH(
@@ -645,19 +662,18 @@ class ConversionSpec extends Specification {
                                 caseValue = Seq(
                                     CASE(
                                         value = "${doOption}",
-                                        to = "mr_option")),
-                                default = DEFAULT(
-                                    to = "mr_default"))),
-                        name = "decision-mr_default-mr_option")),
+                                        attributes = Map("@to" -> DataRecord("mr_option")))),
+                                default = DEFAULT("mr_default"))),
+                        attributes = Map("@name" -> DataRecord("decision-mr_default-mr_option")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_default",
+                        attributes = Map("@name" -> DataRecord("mr_default")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("decision-mr_last-mr_sugarOption"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_option",
+                        attributes = Map("@name" -> DataRecord("mr_option")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -669,19 +685,18 @@ class ConversionSpec extends Specification {
                                 caseValue = Seq(
                                     CASE(
                                         value = "${doSugarOption}",
-                                        to = "mr_sugarOption")),
-                                default = DEFAULT(
-                                    to = "mr_last"))),
-                        name = "decision-mr_last-mr_sugarOption")),
+                                        attributes = Map("@to" -> DataRecord("mr_sugarOption")))),
+                                default = DEFAULT("mr_last"))),
+                        attributes = Map("@name" -> DataRecord("decision-mr_last-mr_sugarOption")))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_sugarOption",
+                        attributes = Map("@name" -> DataRecord("mr_sugarOption")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
                         ok = ACTION_TRANSITION("mr_last"),
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("action"), ACTION(
-                        name = "mr_last",
+                        attributes = Map("@name" -> DataRecord("mr_last")),
                         actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                             jobu45tracker = "${jobTracker}",
                             nameu45node = "${nameNode}")),
@@ -689,7 +704,7 @@ class ConversionSpec extends Specification {
                         error = ACTION_TRANSITION("kill"))),
                     DataRecord(None, Some("kill"), KILL(
                         message = "sub-wf-ending-with-sugar-option" + " failed, error message[${wf:errorMessage(wf:lastErrorNode())}]",
-                        name = "kill"))),
+                        attributes = Map("@name" -> DataRecord("kill"))))),
                 start = START("decision-mr_default-mr_option"),
                 end = END("end"))
             Conversion(SubWfEndWithSugarOption) must_== wf
@@ -794,8 +809,7 @@ class ConversionSpec extends Specification {
     def DecisionAndSugarOption = {
         val first = MapReduceJob("first") dependsOn Start
         val decision = Decision(
-            "route1" -> Predicates.AlwaysTrue
-        ) dependsOn first
+            "route1" -> Predicates.AlwaysTrue) dependsOn first
         val option = MapReduceJob("option") dependsOn (decision option "route1") doIf "${doOption}"
         val default = MapReduceJob("default") dependsOn Optional(option)
         val default2 = MapReduceJob("default2") dependsOn OneOf(decision default, default)
@@ -822,8 +836,7 @@ class ConversionSpec extends Specification {
     def WfEndWithSugarOption = {
 
         val decision = Decision(
-            "option" -> Predicates.BooleanProperty("doOption")
-        ) dependsOn Start
+            "option" -> Predicates.BooleanProperty("doOption")) dependsOn Start
         val option = MapReduceJob("option") dependsOn (decision option "option")
         val default = MapReduceJob("default") dependsOn (decision default)
         val sugarOption = MapReduceJob("sugarOption") dependsOn default doIf "doSugarOption"

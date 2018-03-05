@@ -21,12 +21,12 @@ object WfExample {
             actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                 jobu45tracker = "{jobTracker}",
                 nameu45node = "${nameNode}",
-                configuration = Some(CONFIGURATION(
+                configuration = Some(CONFIGURATION(Seq(
                     Property("mapred.mapper.class", "org.apache.hadoop.example.IdMapper"),
                     Property("mapred.reducer.class", "org.apache.hadoop.example.IdReducer"),
                     Property("mapred.map.tasks", "1"),
                     Property("mapred.input.dir", "${input}"),
-                    Property("mapred.output.dir", "/usr/foo/${wf:id()}/temp1"))))),
+                    Property("mapred.output.dir", "/usr/foo/${wf:id()}/temp1")))))),
             ok = ACTION_TRANSITION(Map("@to" -> DataRecord("fork"))),
             error = ACTION_TRANSITION(Map("@to" -> DataRecord("kill"))),
             attributes = Map("@name" -> DataRecord("firstjob")))),
@@ -39,12 +39,12 @@ object WfExample {
             actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                 jobu45tracker = "${jobTracker}",
                 nameu45node = "${nameNode}",
-                configuration = Some(CONFIGURATION(
+                configuration = Some(CONFIGURATION(Seq(
                     Property("mapred.mapper.class", "org.apache.hadoop.example.IdMapper"),
                     Property("mapred.reducer.class", "org.apache.hadoop.example.IdReducer"),
                     Property("mapred.map.tasks", "1"),
                     Property("mapred.input.dir", "/usr/foo/${wf:id()}/temp1"),
-                    Property("mapred.output.dir", "/usr/foo/${wf:id()}/temp2"))))),
+                    Property("mapred.output.dir", "/usr/foo/${wf:id()}/temp2")))))),
             ok = ACTION_TRANSITION(Map("@to" -> DataRecord("join"))),
             error = ACTION_TRANSITION(Map("@to" -> DataRecord("kill"))),
             attributes = Map("@name" -> DataRecord("secondjob")))),
@@ -52,12 +52,12 @@ object WfExample {
             actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                 jobu45tracker = "${jobTracker}",
                 nameu45node = "${nameNode}",
-                configuration = Some(CONFIGURATION(
+                configuration = Some(CONFIGURATION(Seq(
                     Property("mapred.mapper.class", "org.apache.hadoop.example.IdMapper"),
                     Property("mapred.reducer.class", "org.apache.hadoop.example.IdReducer"),
                     Property("mapred.map.tasks", "1"),
                     Property("mapred.input.dir", "/usr/foo/${wf:id()}/temp1"),
-                    Property("mapred.output.dir", "/usr/foo/${wf:id()}/temp3"))))),
+                    Property("mapred.output.dir", "/usr/foo/${wf:id()}/temp3")))))),
             ok = ACTION_TRANSITION(Map("@to" -> DataRecord("join"))),
             error = ACTION_TRANSITION(Map("@to" -> DataRecord("kill"))),
             attributes = Map("@name" -> DataRecord("secondjob")))),
@@ -66,12 +66,12 @@ object WfExample {
             actionoption = DataRecord(None, Some("Map-Reduce"), MAPu45REDUCE(
                 jobu45tracker = "${jobTracker}",
                 nameu45node = "${nameNode}",
-                configuration = Some(CONFIGURATION(
+                configuration = Some(CONFIGURATION(Seq(
                     Property("mapred.mapper.class", "org.apache.hadoop.example.IdMapper"),
                     Property("mapred.reducer.class", "org.apache.hadoop.example.IdReducer"),
                     Property("mapred.map.tasks", "1"),
                     Property("mapred.input.dir", "/usr/foo/${wf:id()}/temp2,usr/foo/${wf:id()}/temp3"),
-                    Property("mapred.output.dir", "${output}"))))),
+                    Property("mapred.output.dir", "${output}")))))),
             ok = ACTION_TRANSITION(Map("@to" -> DataRecord("end"))),
             error = ACTION_TRANSITION(Map("@to" -> DataRecord("kill"))))),
         DataRecord(None, Some("kill"), KILL(

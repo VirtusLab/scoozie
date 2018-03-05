@@ -253,7 +253,7 @@ object Conversion {
     }
     def getConfiguration(config: ArgList) = {
         if (!config.isEmpty)
-            Some(CONFIGURATION(config map (tuple => Property(tuple._1, tuple._2)): _*))
+            Some(CONFIGURATION(config map (tuple => Property(tuple._1, tuple._2))))
         else
             None
     }

@@ -30,12 +30,12 @@ object XMLVerification {
 
     def getNodeName(node: DataRecord[WORKFLOWu45APPOption]): String = {
         node.value match {
-            case DECISION(switch, name) => name
-            case FORK(path, name) => name
-            case JOIN(name, to) => name
-            case KILL(message, name) => name
-            case ACTION(actionoption, ok, error, any, name) => name
-            case _ => throw new RuntimeException("error: unexpected node type")
+            case decision: DECISION => decision.name
+            case fork: FORK         => fork.name
+            case join: JOIN         => join.name
+            case kill: KILL         => kill.name
+            case action: ACTION     => action.name
+            case _                  => throw new RuntimeException("error: unexpected node type")
         }
     }
 
@@ -70,8 +70,8 @@ object XMLVerification {
 
             case (target: JOIN, ref: JOIN) =>
                 val areSame = {
-                    if (oneGoesToEnd(ACTION_TRANSITION(ref.to), ACTION_TRANSITION(target.to)))
-                        bothGoToEnd(ACTION_TRANSITION(ref.to), ACTION_TRANSITION(target.to))
+                    if (oneGoesToEnd(ACTION_TRANSITION(Map("@to" -> DataRecord(ref.to))), ACTION_TRANSITION(Map("@to" -> DataRecord(target.to)))))
+                        bothGoToEnd(ACTION_TRANSITION(Map("@to" -> DataRecord(ref.to))), ACTION_TRANSITION(Map("@to" -> DataRecord(target.to))))
                     else
                         areFunctionallySame(getNodeByName(refNodes, ref.to), getNodeByName(targetNodes, target.to), refNodes, targetNodes)
                 }
@@ -102,14 +102,16 @@ object XMLVerification {
         convertHive(workflow)
     }
 
+    def makeNamesBlank(attributes: Map[String, DataRecord[Any]]): Map[String, DataRecord[Any]] = attributes + ("@name" -> DataRecord(""))
+
     def makeNamesBlank(node: WORKFLOWu45APPOption): WORKFLOWu45APPOption = {
         node match {
-            case DECISION(switch, name) => DECISION(switch, "")
-            case FORK(path, name) => FORK(path, "")
-            case JOIN(name, to) => JOIN("", to)
-            case KILL(message, name) => KILL(message, "")
-            case ACTION(actionoption, ok, error, any, name) => ACTION(actionoption, ok, error, any, "")
-            case _ => node
+            case decision: DECISION => decision.copy(attributes = makeNamesBlank(decision.attributes))
+            case fork: FORK         => fork.copy(attributes = makeNamesBlank(fork.attributes))
+            case join: JOIN         => join.copy(attributes = makeNamesBlank(join.attributes))
+            case kill: KILL         => kill.copy(attributes = makeNamesBlank(kill.attributes))
+            case action: ACTION     => action.copy(attributes = makeNamesBlank(action.attributes))
+            case _                  => node
         }
     }
 

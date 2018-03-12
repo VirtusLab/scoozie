@@ -22,9 +22,7 @@ class XMLGenerationSpec extends Specification {
                 configuration = List(
                     "testJson" -> """{
     	     						"foo" : "bar"
-    	     						}"""
-                )
-            ) dependsOn firstJob
+    	     						}""")) dependsOn firstJob
             val end = End dependsOn jsonJob
             val wf = Workflow("test-post-processing", end)
 

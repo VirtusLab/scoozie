@@ -157,8 +157,7 @@ class VerificationSpec extends Specification {
         "give valid for both decision nodes going to end" in {
             def complexDecisions = {
                 val first = Decision(
-                    "foo" -> Predicates.BooleanProperty("bar")
-                ) dependsOn Start
+                    "foo" -> Predicates.BooleanProperty("bar")) dependsOn Start
                 val end = End dependsOn OneOf(first default, first option "foo")
                 Workflow("complex-decisions", end)
             }
@@ -168,8 +167,7 @@ class VerificationSpec extends Specification {
         "give valid for both decision nodes going to same place not end" in {
             def ComplexDecision = {
                 val first = Decision(
-                    "foo" -> Predicates.BooleanProperty("bar")
-                ) dependsOn Start
+                    "foo" -> Predicates.BooleanProperty("bar")) dependsOn Start
                 val foo = NoOpJob("foo2") dependsOn OneOf(first default, first option "foo")
                 val end = End dependsOn foo
                 Workflow("complex-decisions", end)
@@ -180,8 +178,7 @@ class VerificationSpec extends Specification {
         "give valid for decision with one route at end" in {
             def decision = {
                 val first = Decision(
-                    "foo" -> Predicates.BooleanProperty("bar")
-                ) dependsOn Start
+                    "foo" -> Predicates.BooleanProperty("bar")) dependsOn Start
                 val foo = NoOpJob("foo") dependsOn (first option "foo")
                 val end = End dependsOn OneOf(foo, first default)
                 Workflow("complex-decisions", end)
@@ -190,8 +187,7 @@ class VerificationSpec extends Specification {
 
             def decision2 = {
                 val first = Decision(
-                    "foo" -> Predicates.BooleanProperty("bar")
-                ) dependsOn Start
+                    "foo" -> Predicates.BooleanProperty("bar")) dependsOn Start
                 val foo = NoOpJob("foo") dependsOn (first default)
                 val end = End dependsOn OneOf(foo, first option "foo")
                 Workflow("complex-decisions", end)

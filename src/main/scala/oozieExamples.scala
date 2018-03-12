@@ -18,72 +18,69 @@ import java.io._
 object WfExample {
     val nodes: Seq[DataRecord[WORKFLOWu45APPOption]] = Seq(
         DataRecord(None, Some("action"), ACTION(
-            name = "firstjob",
             actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                 jobu45tracker = "{jobTracker}",
                 nameu45node = "${nameNode}",
-                configuration = Some(CONFIGURATION(
+                configuration = Some(CONFIGURATION(Seq(
                     Property("mapred.mapper.class", "org.apache.hadoop.example.IdMapper"),
                     Property("mapred.reducer.class", "org.apache.hadoop.example.IdReducer"),
                     Property("mapred.map.tasks", "1"),
                     Property("mapred.input.dir", "${input}"),
-                    Property("mapred.output.dir", "/usr/foo/${wf:id()}/temp1"))))),
-            ok = ACTION_TRANSITION("fork"),
-            error = ACTION_TRANSITION("kill"))),
+                    Property("mapred.output.dir", "/usr/foo/${wf:id()}/temp1")))))),
+            ok = ACTION_TRANSITION(Map("@to" -> DataRecord("fork"))),
+            error = ACTION_TRANSITION(Map("@to" -> DataRecord("kill"))),
+            attributes = Map("@name" -> DataRecord("firstjob")))),
         DataRecord(None, Some("fork"), FORK(
             path = Seq(
-                FORK_TRANSITION("secondjob"),
-                FORK_TRANSITION("thirdjob")),
-            name = "fork")),
+                FORK_TRANSITION(Map("@start" -> DataRecord("secondjob"))),
+                FORK_TRANSITION(Map("@start" -> DataRecord("thirdjob")))),
+            attributes = Map("@name" -> DataRecord("fork")))),
         DataRecord(None, Some("action"), ACTION(
-            name = "secondjob",
             actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                 jobu45tracker = "${jobTracker}",
                 nameu45node = "${nameNode}",
-                configuration = Some(CONFIGURATION(
+                configuration = Some(CONFIGURATION(Seq(
                     Property("mapred.mapper.class", "org.apache.hadoop.example.IdMapper"),
                     Property("mapred.reducer.class", "org.apache.hadoop.example.IdReducer"),
                     Property("mapred.map.tasks", "1"),
                     Property("mapred.input.dir", "/usr/foo/${wf:id()}/temp1"),
-                    Property("mapred.output.dir", "/usr/foo/${wf:id()}/temp2"))))),
-            ok = ACTION_TRANSITION("join"),
-            error = ACTION_TRANSITION("kill"))),
+                    Property("mapred.output.dir", "/usr/foo/${wf:id()}/temp2")))))),
+            ok = ACTION_TRANSITION(Map("@to" -> DataRecord("join"))),
+            error = ACTION_TRANSITION(Map("@to" -> DataRecord("kill"))),
+            attributes = Map("@name" -> DataRecord("secondjob")))),
         DataRecord(None, Some("action"), ACTION(
-            name = "thirdjob",
             actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                 jobu45tracker = "${jobTracker}",
                 nameu45node = "${nameNode}",
-                configuration = Some(CONFIGURATION(
+                configuration = Some(CONFIGURATION(Seq(
                     Property("mapred.mapper.class", "org.apache.hadoop.example.IdMapper"),
                     Property("mapred.reducer.class", "org.apache.hadoop.example.IdReducer"),
                     Property("mapred.map.tasks", "1"),
                     Property("mapred.input.dir", "/usr/foo/${wf:id()}/temp1"),
-                    Property("mapred.output.dir", "/usr/foo/${wf:id()}/temp3"))))),
-            ok = ACTION_TRANSITION("join"),
-            error = ACTION_TRANSITION("kill"))),
-        DataRecord(None, Some("join"), JOIN(
-            name = "join",
-            to = "finaljob")),
+                    Property("mapred.output.dir", "/usr/foo/${wf:id()}/temp3")))))),
+            ok = ACTION_TRANSITION(Map("@to" -> DataRecord("join"))),
+            error = ACTION_TRANSITION(Map("@to" -> DataRecord("kill"))),
+            attributes = Map("@name" -> DataRecord("secondjob")))),
+        DataRecord(None, Some("join"), JOIN(Map("@name" -> DataRecord("join"), "@to" -> DataRecord("finaljob")))),
         DataRecord(None, Some("action"), ACTION(
-            name = "finaljob",
             actionoption = DataRecord(None, Some("Map-Reduce"), MAPu45REDUCE(
                 jobu45tracker = "${jobTracker}",
                 nameu45node = "${nameNode}",
-                configuration = Some(CONFIGURATION(
+                configuration = Some(CONFIGURATION(Seq(
                     Property("mapred.mapper.class", "org.apache.hadoop.example.IdMapper"),
                     Property("mapred.reducer.class", "org.apache.hadoop.example.IdReducer"),
                     Property("mapred.map.tasks", "1"),
                     Property("mapred.input.dir", "/usr/foo/${wf:id()}/temp2,usr/foo/${wf:id()}/temp3"),
-                    Property("mapred.output.dir", "${output}"))))),
-            ok = ACTION_TRANSITION("end"),
-            error = ACTION_TRANSITION("kill"))),
+                    Property("mapred.output.dir", "${output}")))))),
+            ok = ACTION_TRANSITION(Map("@to" -> DataRecord("end"))),
+            error = ACTION_TRANSITION(Map("@to" -> DataRecord("kill"))))),
         DataRecord(None, Some("kill"), KILL(
             message = "Map/Reduce failed, error message[${wf:errorMessage()}]",
-            name = "kill")))
+            attributes = Map("@name" -> DataRecord("kill")))))
 
     val wfApp = WORKFLOWu45APP(
-        name = "example-forkjoinwf",
         workflowu45appoption = nodes,
-        start = START("firstjob"),
-        end = END("end"))
+        start = START(Map("@to" -> DataRecord("firstjob"))),
+        end = END(Map("@name" -> DataRecord("end"))),
+        attributes = Map("@name" -> DataRecord("example-forkjoinwf")))
 }

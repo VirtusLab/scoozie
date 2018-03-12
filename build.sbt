@@ -12,13 +12,13 @@ name := "scoozie"
 
 organization := "com.klout"
 
-version := "0.5.6"
+version := "0.5.6-SNAPSHOT"
 
 scalaVersion := "2.10.4"
 
 mergeStrategy in assembly := {
         case PathList("META-INF", xs @ _*) =>
-            (xs map {_.toLowerCase}) match {
+            xs map {_.toLowerCase} match {
                 case "services" :: xs => MergeStrategy.filterDistinctLines
                 case ("spring.schemas" :: Nil) | ("spring.handlers" :: Nil) => MergeStrategy.filterDistinctLines
                 case _ => MergeStrategy.discard
@@ -26,19 +26,21 @@ mergeStrategy in assembly := {
         case _ => MergeStrategy.first
     }
 
+val oozieV = "4.2.0"
+val hadoopV = "2.7.3"
+
 libraryDependencies ++= Seq(
-    "org.specs2" %% "specs2-core" % "2.4.11" % "test",
-    "com.google.guava" % "guava" % "18.0",
-    "org.apache.oozie" % "oozie-client" % "4.0.0-cdh5.3.3",
-    "org.apache.oozie" % "oozie-core" % "4.0.0-cdh5.3.3",
-    "org.apache.hadoop" % "hadoop-common" % "2.5.0-cdh5.3.3"
+    "org.specs2"        %% "specs2-core"  % "2.4.11" % Test,
+    "com.google.guava"  % "guava"         % "18.0",
+    "org.apache.oozie"  % "oozie-client"  % oozieV,
+    "org.apache.oozie"  % "oozie-core"    % oozieV,
+    "org.apache.hadoop" % "hadoop-common" % hadoopV
 )
 
 
 resolvers ++= Seq(
     "snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
-    "releases"  at "http://oss.sonatype.org/content/repositories/releases",
-    "cloudera" at "https://repository.cloudera.com/artifactory/public"
+    "releases"  at "http://oss.sonatype.org/content/repositories/releases"
 )
 
 scalariformAutoformat := true
@@ -49,7 +51,7 @@ scalariformPreferences := scalariformPreferences.value
   .setPreference(AlignSingleLineCaseStatements, true)
   .setPreference(PreserveSpaceBeforeArguments, true)
 
-//todo update scalaxb
+//todo update scalaxb to 1.5.2
 //enablePlugins(ScalaxbPlugin)
 //scalaxbPackageName in (Compile, scalaxb) := "workflow"
 

@@ -5,18 +5,20 @@
 package com.klout.scoozie
 package runner
 
-import dsl._
-import jobs._
-import workflow._
-import scalaxb._
-import conversion._
-import org.apache.hadoop.fs.{ FileSystem, Path, FSDataOutputStream }
-import org.apache.hadoop.conf.Configuration
-import org.apache.oozie.client.{ WorkflowAction, OozieClient, WorkflowJob }
-import java.util.{ Properties }
 import java.io._
+import java.util.{ Date, Properties }
+
+import com.klout.scoozie.conversion._
+import com.klout.scoozie.dsl._
+import com.klout.scoozie.jobs._
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.{ FSDataOutputStream, FileSystem, Path }
+import org.apache.oozie.client.{ OozieClient, WorkflowAction, WorkflowJob }
+import scalaxb._
+import workflow._
+
 import scala.collection.JavaConverters._
-import java.util.Date
+import scala.io.Source
 
 case class OozieConfig(oozieUrl: String, properties: Map[String, String])
 
@@ -73,13 +75,13 @@ abstract class CliApp(wfs: List[Workflow], postprocessing: Option[XmlPostProcess
                 println(index + " -> " + wf.name)
                 index += 1
             })
-            val ln = io.Source.stdin.getLines
+            val ln = Source.stdin.getLines
             val choice = ln.next.toInt
             if (choice < 0 || choice >= wfs.length) {
                 println("invalid choice")
             } else {
                 println(wfs(choice))
-                val ln = io.Source.stdin.getLines
+                val ln = Source.stdin.getLines
                 println("generate xml for this workflow? y/n")
                 val print = ln.next
                 print match {
@@ -121,7 +123,7 @@ object Helpers {
      */
     def readProperties(propertyFile: String): Map[String, String] = {
         var propertyMap: Map[String, String] = Map.empty
-        io.Source.fromFile(propertyFile).getLines.foreach { line =>
+        Source.fromFile(propertyFile).getLines.foreach { line =>
             if (!line.isEmpty && line(0) != '#') {
                 propertyMap = addProperty(propertyMap, line)
             }

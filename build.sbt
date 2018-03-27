@@ -12,7 +12,7 @@ name := "scoozie"
 
 organization := "com.klout"
 
-version := "0.5.6"
+version := "0.6.0-SNAPSHOT"
 
 scalaVersion := "2.10.4"
 
@@ -26,8 +26,10 @@ mergeStrategy in assembly := {
         case _ => MergeStrategy.first
     }
 
-val oozieV = "4.2.0"
-val hadoopV = "2.7.3"
+val hdpV = "2.6.3.0-235"
+
+val oozieV = s"4.2.0.$hdpV"
+val hadoopV = s"2.7.3.$hdpV"
 
 libraryDependencies ++= Seq(
     "org.specs2"        %% "specs2-core"  % "2.4.11" % Test,
@@ -39,8 +41,10 @@ libraryDependencies ++= Seq(
 
 
 resolvers ++= Seq(
-    "snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
-    "releases"  at "http://oss.sonatype.org/content/repositories/releases"
+    "snapshots"   at "http://oss.sonatype.org/content/repositories/snapshots",
+    "releases"    at "http://oss.sonatype.org/content/repositories/releases",
+    "hortonworks" at "http://repo.hortonworks.com/content/repositories/releases",
+    "spring"      at "http://repo.spring.io/plugins-release"   //    "org.pentaho" % "pentaho-aggdesigner-algorithm" % "5.1.5-jhyde"
 )
 
 scalariformAutoformat := true

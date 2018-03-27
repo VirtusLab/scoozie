@@ -26,7 +26,7 @@ mergeStrategy in assembly := {
 
 val hdpV = "2.6.3.0-235"
 
-version := s"0.6.0.$hdpV-SNAPSHOT"
+version := "0.6.0-SNAPSHOT"
 
 val oozieV = s"4.2.0.$hdpV"
 val hadoopV = s"2.7.3.$hdpV"
@@ -34,9 +34,9 @@ val hadoopV = s"2.7.3.$hdpV"
 libraryDependencies ++= Seq(
     "org.specs2"        %% "specs2-core"  % "2.4.11" % Test,
     "com.google.guava"  % "guava"         % "18.0",
-    "org.apache.oozie"  % "oozie-client"  % oozieV,
-    "org.apache.oozie"  % "oozie-core"    % oozieV,
-    "org.apache.hadoop" % "hadoop-common" % hadoopV
+    "org.apache.oozie"  % "oozie-client"  % oozieV % "provided",
+    "org.apache.oozie"  % "oozie-core"    % oozieV % "provided",
+    "org.apache.hadoop" % "hadoop-common" % hadoopV % "provided"
 )
 
 

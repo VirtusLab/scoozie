@@ -4,39 +4,39 @@
 
 import ScalaxbKeys._
 import scalariform.formatter.preferences._
-import AssemblyKeys._
-
-assemblySettings
+import sbtassembly.{MergeStrategy, PathList}
 
 name := "scoozie"
 
 organization := "com.klout"
 
-scalaVersion := "2.10.4"
+version := "0.6.0-SNAPSHOT"
 
-mergeStrategy in assembly := {
-        case PathList("META-INF", xs @ _*) =>
-            xs map {_.toLowerCase} match {
-                case "services" :: xs => MergeStrategy.filterDistinctLines
-                case ("spring.schemas" :: Nil) | ("spring.handlers" :: Nil) => MergeStrategy.filterDistinctLines
-                case _ => MergeStrategy.discard
-        }
-        case _ => MergeStrategy.first
+scalaVersion := "2.11.12"
+
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", xs @ _*) =>
+    xs map {_.toLowerCase} match {
+      case "services" :: xs => MergeStrategy.filterDistinctLines
+      case ("spring.schemas" :: Nil) | ("spring.handlers" :: Nil) => MergeStrategy.filterDistinctLines
+      case _ => MergeStrategy.discard
     }
+  case _                       => MergeStrategy.first
+}
 
 val hdpV = "2.6.3.0-235"
-
-version := "0.6.0-SNAPSHOT"
 
 val oozieV = s"4.2.0.$hdpV"
 val hadoopV = s"2.7.3.$hdpV"
 
 libraryDependencies ++= Seq(
-    "org.specs2"        %% "specs2-core"  % "2.4.11" % Test,
-    "com.google.guava"  % "guava"         % "18.0",
-    "org.apache.oozie"  % "oozie-client"  % oozieV % "provided",
-    "org.apache.oozie"  % "oozie-core"    % oozieV % "provided",
-    "org.apache.hadoop" % "hadoop-common" % hadoopV % "provided"
+    "org.specs2"             %% "specs2-core"              % "2.4.11" % Test,
+    "org.scala-lang.modules" %% "scala-xml"                % "1.1.0",
+    "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.0",
+    "com.google.guava"       % "guava"                     % "18.0",
+    "org.apache.oozie"       % "oozie-client"              % oozieV % "provided",
+    "org.apache.oozie"       % "oozie-core"                % oozieV % "provided",
+    "org.apache.hadoop"      % "hadoop-common"             % hadoopV % "provided"
 )
 
 

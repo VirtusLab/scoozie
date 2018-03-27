@@ -12,8 +12,6 @@ name := "scoozie"
 
 organization := "com.klout"
 
-version := "0.6.0-SNAPSHOT"
-
 scalaVersion := "2.10.4"
 
 mergeStrategy in assembly := {
@@ -27,6 +25,8 @@ mergeStrategy in assembly := {
     }
 
 val hdpV = "2.6.3.0-235"
+
+version := s"0.6.0.$hdpV-SNAPSHOT"
 
 val oozieV = s"4.2.0.$hdpV"
 val hadoopV = s"2.7.3.$hdpV"

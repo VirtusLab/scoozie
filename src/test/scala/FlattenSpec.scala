@@ -7,7 +7,7 @@ package conversion
 
 import dsl._
 import jobs._
-import samples._
+import example._
 import org.specs2.mutable._
 
 class FlattenSpec extends Specification {

@@ -1,19 +1,9 @@
-/**
- * Copyright (C) 2013 Klout Inc. <http://www.klout.com>
- */
-
 package com.klout.scoozie
 package verification
 
-import conversion._
-import jobs._
+import com.klout.scoozie.conversion._
 
 import scala.io.Source
-
-case class VerificationNode(graphNode: GraphNode, parentThreads: Seq[ForkThread])
-
-//path is the child of the fork that this thread lies on
-case class ForkThread(fork: GraphNode, path: GraphNode)
 
 object Verification {
 

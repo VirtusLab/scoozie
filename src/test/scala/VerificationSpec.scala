@@ -6,10 +6,10 @@ package com.klout.scoozie
 package verification
 
 import org.specs2.mutable._
-import samples._
 import conversion._
 import jobs._
 import dsl._
+import example.SimpleSamples
 
 class VerificationSpec extends Specification {
 

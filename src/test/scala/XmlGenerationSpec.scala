@@ -10,7 +10,7 @@ import dsl._
 import workflow._
 import scalaxb._
 import org.specs2.mutable._
-import runner._
+import runner.{ RunWorkflow, _ }
 
 class XMLGenerationSpec extends Specification {
     "XML Generation" should {

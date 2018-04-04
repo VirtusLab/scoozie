@@ -1,12 +1,11 @@
 /**
  * Copyright (C) 2013 Klout Inc. <http://www.klout.com>
  */
+package com.klout.scoozie
+package example
 
-package com.klout.scoozie.example
-
-import workflow._
 import scalaxb._
-import java.io._
+import workflow._
 
 /*
  * Example from the Oozie Website:

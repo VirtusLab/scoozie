@@ -1,101 +1,9 @@
-/**
- * Copyright (C) 2013 Klout Inc. <http://www.klout.com>
- */
-
 package com.klout.scoozie
 package conversion
 
-import jobs._
-import dsl._
-import workflow._
-import scalaxb._
-import com.google.common.base._
+import com.klout.scoozie.dsl._
 
-case class RefSet[A <: AnyRef](vals: Seq[A]) extends Set[A] {
-
-    override def contains(elem: A): Boolean = vals exists (e => e eq elem)
-
-    def iterator: Iterator[A] = vals.iterator
-
-    def -(elem: A): RefSet[A] = {
-        if (!(this contains elem))
-            this
-        else
-            RefSet(vals filter (_ ne elem))
-    }
-
-    def +(elem: A): RefSet[A] = {
-        if (this contains elem)
-            this
-        else
-            RefSet(vals :+ elem)
-    }
-    def ++(elems: RefSet[A]): RefSet[A] = (this /: elems)(_ + _)
-
-    def --(elems: RefSet[A]): RefSet[A] = (this /: elems)(_ - _)
-
-    def map[B <: AnyRef](f: (A) => B): RefSet[B] = {
-        (RefSet[B]() /: vals) ((e1: RefSet[B], e2: A) => e1 + f(e2))
-    }
-
-    override def equals(that: Any): Boolean = {
-        that match {
-            case RefSet(otherVals) =>
-                this.vals.toSet.equals(otherVals.toSet)
-            case _ => false
-        }
-    }
-
-}
-
-object RefSet {
-    def apply[A <: AnyRef](): RefSet[A] = {
-        RefSet(Seq.empty)
-    }
-    def apply[A <: AnyRef](elem: A, elems: A*): RefSet[A] = {
-        RefSet(elem +: elems)
-    }
-}
-
-/*
- * Map that compares keys by reference
- */
-case class RefMap[A <: AnyRef, B](vals: Map[RefWrap[A], B]) extends Map[RefWrap[A], B] {
-
-    def +[B1 >: B](kv: (RefWrap[A], B1)) = {
-        RefMap(vals + kv)
-    }
-
-    def +[B1 >: B](kv: => (A, B1)): RefMap[A, B1] = {
-        val newKv = RefWrap(kv._1) -> kv._2
-        RefMap(vals + newKv)
-    }
-
-    def ++(rmap: RefMap[A, B]) = {
-        (this /: rmap) (_ + _)
-    }
-
-    def -(key: RefWrap[A]) = {
-        RefMap(vals - key)
-    }
-
-    def get(key: RefWrap[A]): Option[B] = {
-        vals get key
-    }
-
-    def get(key: => A): Option[B] = {
-        vals get RefWrap(key)
-    }
-
-    def iterator: Iterator[(RefWrap[A], B)] = vals.iterator
-}
-
-case class RefWrap[T <: AnyRef](value: T) {
-    override def equals(other: Any) = other match {
-        case ref: RefWrap[_] => ref.value eq value
-        case _               => false
-    }
-}
+import scala.collection.immutable
 
 object Flatten {
     def apply(workflow: Workflow): RefMap[Dependency, GraphNode] = {
@@ -149,7 +57,7 @@ object Flatten {
                                     lastNode.after = RefSet(after.toSeq)
                                 else {
                                     //remove "end" from lastNode's decisionAfter
-                                    val end = lastNode.decisionAfter filter (_.workflowOption == WorkflowEnd) headOption
+                                    val end = lastNode.decisionAfter find (_.workflowOption == WorkflowEnd)
                                     val decisionRoutes = end match {
                                         case Some(node) => node.decisionRoutes
                                         case _          => Set.empty
@@ -157,9 +65,8 @@ object Flatten {
                                     end foreach (lastNode.decisionAfter -= _)
                                     //add in new decisionAfter
                                     lastNode.decisionAfter ++= RefSet(after.toSeq)
-                                    after foreach (after => {
-                                        after.decisionRoutes = (after.decisionRoutes ++ decisionRoutes)
-                                    })
+                                    after foreach (after =>
+                                        after.decisionRoutes = after.decisionRoutes ++ decisionRoutes)
                                     lastNode.after = RefSet()
                                 }
                             }
@@ -177,7 +84,7 @@ object Flatten {
                                         alreadyThere.decisionAfter ++= RefSet(after.toSeq)
                                     case _ =>
                                         currDep match {
-                                            case Node(job: Job, deps) =>
+                                            case Node(job: Job, deps: List[_]) =>
                                                 val newNode = GraphNode(
                                                     job.jobName,
                                                     WorkflowJob(job),
@@ -185,9 +92,9 @@ object Flatten {
                                                     after = RefSet(),
                                                     decisionAfter = RefSet(after.toSeq))
                                                 accum += currDep -> newNode
-                                                deps.toList foreach (flatten0(_, Set(newNode), inDecision))
+                                                deps foreach (flatten0(_, Set(newNode), inDecision))
                                             case _ =>
-                                                flatten0(currDep, after, true)
+                                                flatten0(currDep, after, inDecision = true)
                                         }
                                 }
                             })
@@ -199,7 +106,7 @@ object Flatten {
                                     after foreach (_.before += graphNode)
                                 case _ =>
                                     node match {
-                                        case Node(job: Job, deps) =>
+                                        case Node(job: Job, deps: List[_]) =>
                                             val newNode = GraphNode(
                                                 job.jobName,
                                                 WorkflowJob(job))
@@ -293,7 +200,7 @@ object Flatten {
         var accum = RefMap[Dependency, GraphNode](Map.empty)
 
         def makeSuffix(nodes: RefSet[GraphNode]): String = {
-            (nodes.map ((currNode: GraphNode) => currNode.name)).toList.sorted mkString "-"
+            nodes.map((currNode: GraphNode) => currNode.name).toList.sorted mkString "-"
         }
 
         for (node <- nodes.values) {
@@ -315,7 +222,7 @@ object Flatten {
             }
         }
         //check if we need a fork at the start of the workflow
-        val firstNodes = RefSet((nodes.values.toSet filter (isStartNode(_))).toList)
+        val firstNodes = RefSet((nodes.values.toSet filter isStartNode).toList)
         if (firstNodes.size > 1) {
             val forkName = s"fork-${makeSuffix(firstNodes)}"
             val fork = GraphNode(forkName, WorkflowFork, RefSet(), firstNodes)
@@ -323,7 +230,7 @@ object Flatten {
             accum += ForkDependency(forkName) -> fork
         }
         //check if we need a join at the end of the workflow
-        val lastNodes = RefSet((nodes.values.toSet filter (isEndNode(_))).toList)
+        val lastNodes = RefSet((nodes.values.toSet filter isEndNode).toList)
         if (lastNodes.size > 1) {
             val joinName = s"join-${makeSuffix(lastNodes)}"
             val join = GraphNode(joinName, WorkflowJoin, lastNodes, RefSet())
@@ -364,14 +271,14 @@ object Flatten {
      * returns true if there exist at least 2 nodes in given list w/ same name
      * ignoring the last character if it is a digit)
      */
-    def hasDuplicates(nodes: List[GraphNode], name: String) = {
-        (nodes filter (n => nameNumMatch(n.name, name))).size > 1
+    def hasDuplicates(nodes: List[GraphNode], name: String): Boolean = {
+        (nodes count (n => nameNumMatch(n.name, name))) > 1
     }
 
     /*
      * Performs verfication on node names, repairing incorrect names
      */
-    def verifyNames(nodes: List[GraphNode]) = {
+    def verifyNames(nodes: List[GraphNode]): immutable.Seq[GraphNode] = {
         removeDisallowedCharacters(nodes)
         fixDuplicateNames(nodes)
         fixLongNames(nodes)
@@ -380,7 +287,7 @@ object Flatten {
     /*
      * - Removes disallowed characters such as "${}"
      */
-    def removeDisallowedCharacters(nodes: List[GraphNode]) = {
+    def removeDisallowedCharacters(nodes: List[GraphNode]): Unit = {
         val Pattern = """[${}]""".r
         nodes foreach (n => {
             n.name = Pattern.replaceAllIn(n.name, "")
@@ -406,7 +313,7 @@ object Flatten {
     def fixDuplicateNames(nodes: List[GraphNode]): List[GraphNode] = {
         val refSet = RefSet(nodes)
         val partiallyOrdered = Conversion.order(refSet)
-        val orderedNodes: List[GraphNode] = (partiallyOrdered.toList sortWith (PartiallyOrderedNode.lt) map (_.node))
+        val orderedNodes: List[GraphNode] = partiallyOrdered.toList sortWith PartiallyOrderedNode.lt map (_.node)
         //get the nodes with duplicates in order from "bottom" to "top"
         var nodesToRename = orderedNodes.reverse filter (n => hasDuplicates(orderedNodes, n.name))
         nodesToRename = removeEndingDigits(nodesToRename)

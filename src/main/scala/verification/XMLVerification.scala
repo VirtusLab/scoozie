@@ -1,7 +1,3 @@
-/**
- * Copyright (C) 2013 Klout Inc. <http://www.klout.com>
- */
-
 package com.klout.scoozie
 package verification
 
@@ -222,16 +218,4 @@ object XMLVerification {
             case _          => throw new RuntimeException(s"error: node $nodeName not in workflow")
         }
     }
-}
-
-object Verify extends App {
-    val refPath = readLine("input reference xml path: ")
-    val targetPath = readLine("input target scoozie generated xml path: ")
-    val refXml = scala.io.Source.fromFile(refPath).mkString
-    val targetXml = scala.io.Source.fromFile(targetPath).mkString
-    val areSame = XMLVerification.verify(refXml, targetXml)
-    if (areSame)
-        println("workflows are functionally equal")
-    else
-        println("error: workflows are not functionally equal")
 }

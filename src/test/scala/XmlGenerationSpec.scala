@@ -30,7 +30,9 @@ class XMLGenerationSpec extends Specification {
         }
     }
 
-    val postProcessedXml = """<workflow-app name="test-post-processing" xmlns="uri:oozie:workflow:0.2">
+    private val xmlWorkflowNamespace = "uri:oozie:workflow:0.3"
+
+    val postProcessedXml = """<workflow-app name="test-post-processing" xmlns="""" + xmlWorkflowNamespace + """">
     <start to="mr_first"/>
     <action name="mr_first">
         <map-reduce>

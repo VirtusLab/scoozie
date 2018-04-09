@@ -16,8 +16,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:workflow="uri:oozie:workflow:0.2"
-           elementFormDefault="qualified" targetNamespace="uri:oozie:workflow:0.2">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:workflow="uri:oozie:workflow:0.3"
+           elementFormDefault="qualified" targetNamespace="uri:oozie:workflow:0.3">
 
     <xs:element name="workflow-app" type="workflow:WORKFLOW-APP"/>
 
@@ -29,6 +29,7 @@
 
     <xs:complexType name="WORKFLOW-APP">
         <xs:sequence>
+        	<xs:element name="credentials" type="workflow:CREDENTIALS" minOccurs="0" maxOccurs="1"/>
             <xs:element name="start" type="workflow:START" minOccurs="1" maxOccurs="1"/>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="decision" type="workflow:DECISION" minOccurs="1" maxOccurs="1"/>
@@ -131,6 +132,9 @@
             <xs:any namespace="uri:oozie:sla:0.1" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute name="name" type="workflow:IDENTIFIER" use="required"/>
+        <xs:attribute name="cred" type="xs:string"/>
+        <xs:attribute name="retry-max" type="xs:string"/>
+        <xs:attribute name="retry-interval" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="MAP-REDUCE">
@@ -260,4 +264,25 @@
         <xs:attribute name="dir-files" type="xs:string"/>
     </xs:complexType>
 
+    <xs:complexType name="CREDENTIALS">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="credential" type="workflow:CREDENTIAL"/>
+		</xs:sequence>
+    </xs:complexType>
+
+   	<xs:complexType name="CREDENTIAL">
+        <xs:sequence  minOccurs="0" maxOccurs="unbounded" >
+                   <xs:element name="property" minOccurs="1" maxOccurs="unbounded">
+                	<xs:complexType>
+	                    <xs:sequence>
+	                        <xs:element name="name" minOccurs="1" maxOccurs="1" type="xs:string"/>
+	                        <xs:element name="value" minOccurs="1" maxOccurs="1" type="xs:string"/>
+	                        <xs:element name="description" minOccurs="0" maxOccurs="1" type="xs:string"/>
+	                    </xs:sequence>
+                	</xs:complexType>
+           		</xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="type" type="xs:string" use="required"/>
+    </xs:complexType>
 </xs:schema>

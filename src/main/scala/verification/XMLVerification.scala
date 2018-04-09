@@ -7,6 +7,9 @@ import scala.xml._
 
 object XMLVerification {
 
+    private val xmlHiveActionNamespace = "uri:oozie:hive-action:0.3"
+    private val xmlWorkflowNamespace = "uri:oozie:workflow:0.3"
+
     def verify(referenceString: String, targetString: String): Boolean = {
         val referenceWf = getWorkflow(referenceString)
         val targetWf = getWorkflow(targetString)
@@ -142,13 +145,13 @@ object XMLVerification {
                 false
             } else {
                 val decisionCasePairs = refCases.zip(targetCases)
-                decisionCasePairs.filterNot {
+                decisionCasePairs.forall {
                     case (refCase, targetCase) =>
                         val samePredicate = refCase.value == targetCase.value
                         val bothToEnd = refCase.to == "end" && targetCase.to == "end"
                         val functionallySame = areFunctionallySame(getNodeByName(refNodes, refCase.to), getNodeByName(targetNodes, targetCase.to), refNodes, targetNodes)
                         samePredicate && (bothToEnd || functionallySame)
-                } isEmpty
+                }
             }
         }
         val defaultsSame: Boolean = (refSwitch.default.to == "end" && targetSwitch.default.to == "end") || areFunctionallySame(getNodeByName(refNodes, refSwitch.default.to), getNodeByName(targetNodes, targetSwitch.default.to), refNodes, targetNodes)
@@ -159,15 +162,13 @@ object XMLVerification {
         if (refTransitions.length != targetTransitions.length)
             false
         else {
-            refTransitions filterNot { refTransition =>
+            refTransitions forall { refTransition =>
                 val nextRefNode = getNodeByName(refNodes, refTransition.start)
                 val matchingTransition = targetTransitions.find (targetTransition => areFunctionallySame(nextRefNode, getNodeByName(targetNodes, targetTransition.start), refNodes, targetNodes))
                 matchingTransition nonEmpty
-            } isEmpty
+            }
         }
     }
-
-    private val xmlHiveActionNamespace = "uri:oozie:hive-action:0.3"
 
     /*
          * Takes a workflow class, searches for un-processed Hive xml,
@@ -201,7 +202,7 @@ object XMLVerification {
      */
     def formatHiveNode(node: Node): Node = {
         val hiveNameSpacedNode = Elem(node.prefix, node.label, node.attributes, NamespaceBinding(null, xmlHiveActionNamespace, scala.xml.TopScope), node.child.toSeq.flatMap(formatHiveNode(_)): _*)
-        val workflowNameSpacedNode = Elem(node.prefix, node.label, node.attributes, NamespaceBinding(null, "uri:oozie:workflow:0.2", scala.xml.TopScope), node.child.toSeq.flatMap(formatHiveNode(_)): _*)
+        val workflowNameSpacedNode = Elem(node.prefix, node.label, node.attributes, NamespaceBinding(null, xmlWorkflowNamespace, scala.xml.TopScope), node.child.toSeq.flatMap(formatHiveNode(_)): _*)
         val hiveNameSpacedTags = List("job-tracker", "name-node", "prepare", "job-xml", "configuration", "script", "param", "file")
         node match {
             case Elem(prefix, label, attributes, scope, children @ _*) =>

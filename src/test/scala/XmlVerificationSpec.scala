@@ -51,8 +51,8 @@ class XMLVerificationSpec extends Specification {
         }
     }
 
-    private val xmlWorkflowNamespace = """uri:oozie:workflow:0.2"""
-    private val xmlHiveActionNamespace = """uri:oozie:hive-action:0.3"""
+    private val xmlWorkflowNamespace = "uri:oozie:workflow:0.3"
+    private val xmlHiveActionNamespace = "uri:oozie:hive-action:0.3"
 
     val simpleWf = """
         <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">

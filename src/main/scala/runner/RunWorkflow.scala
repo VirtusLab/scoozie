@@ -17,6 +17,7 @@ import workflow._
 
 object RunWorkflow {
     val SleepInterval = 5000
+    private val xmlWorkflowNamespace = "uri:oozie:workflow:0.3"
 
     def sequence[T](workflowMap: Map[T, AsyncOozieWorkflow]): Map[T, Either[OozieError, OozieSuccess]] = {
         val workflows = workflowMap map (_._2)
@@ -121,7 +122,7 @@ object RunWorkflow {
     }
 
     def getXMLString(workflow: Workflow, postprocessing: Option[XmlPostProcessing] = Some(XmlPostProcessing.Default)): String = {
-        val defaultScope = scalaxb.toScope(None -> "uri:oozie:workflow:0.2")
+        val defaultScope = scalaxb.toScope(None -> xmlWorkflowNamespace)
         val wf = Conversion(workflow)
         val wfXml = toXML[WORKFLOWu45APP](wf, Some("workflow"), "workflow-app", defaultScope)
         val prettyPrinter = new scala.xml.PrettyPrinter(Int.MaxValue, 4)

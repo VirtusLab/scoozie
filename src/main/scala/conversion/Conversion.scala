@@ -42,10 +42,7 @@ object Conversion {
                 jobu45tracker = JobTracker,
                 nameu45node = NameNode,
                 prepare = getPrepare(prep),
-                jobu45xml = jobXml match {
-                    case Some(xml) => xml
-                    case _         => Seq[String]()
-                },
+                jobu45xml = jobXml.map(_.mkString("\n")),
                 configuration = getConfiguration(config),
                 script = fileName,
                 param = params,
@@ -65,23 +62,14 @@ object Conversion {
         //limitation: tasks must be of the same type
         case FsJob(name, tasks) =>
             DataRecord(None, Some("fs"), FS(
-                delete = tasks flatMap {
-                    case Rm(path) => Some(DELETE(Map("@path" -> DataRecord(path))))
-                    case _        => None
-                },
-                mkdir = tasks flatMap {
-                    case MkDir(path) => Some(MKDIR(Map("@path" -> DataRecord(path))))
-                    case _           => None
-                },
-                move = tasks flatMap {
-                    case Mv(from, to) => Some(MOVE(Map("@source" -> DataRecord(from), "@target" -> DataRecord(to))))
-                    case _            => None
-                },
-                chmod = tasks flatMap {
-                    case ChMod(path, permissions, dirFiles) => Some(CHMOD(Map(
+                tasks flatMap {
+                    case Rm(path)     => Some(DataRecord(None, Some("rm"), DELETE(Map("@path" -> DataRecord(path)))))
+                    case MkDir(path)  => Some(DataRecord(None, Some("mkdir"), MKDIR(Map("@path" -> DataRecord(path)))))
+                    case Mv(from, to) => Some(DataRecord(None, Some("mv"), MOVE(Map("@source" -> DataRecord(from), "@target" -> DataRecord(to)))))
+                    case ChMod(path, permissions, dirFiles) => Some(DataRecord(None, Some("chmod"), CHMOD(Map(
                         "@path" -> DataRecord(path),
                         "@permissions" -> DataRecord(permissions),
-                        "@dir-files" -> DataRecord(dirFiles))))
+                        "@dir-files" -> DataRecord(dirFiles)))))
                     case _ => None
                 }))
         case _ => ???

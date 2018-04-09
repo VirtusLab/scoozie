@@ -56,15 +56,8 @@ scalariformPreferences := scalariformPreferences.value
   .setPreference(PreserveSpaceBeforeArguments, true)
 
 //todo update scalaxb to 1.5.2
-//enablePlugins(ScalaxbPlugin)
-//scalaxbPackageName in (Compile, scalaxb) := "workflow"
-
-scalaxbSettings
-
-sourceGenerators in Compile += scalaxb in Compile
-
-packageName in scalaxb in Compile := "workflow"
-
+enablePlugins(ScalaxbPlugin)
+scalaxbPackageName in (Compile, scalaxb) := "workflow"
 
 scalacOptions ++= Seq(
     "-unchecked",

@@ -51,8 +51,11 @@ class XMLVerificationSpec extends Specification {
         }
     }
 
+    private val xmlWorkflowNamespace = """uri:oozie:workflow:0.2"""
+    private val xmlHiveActionNamespace = """uri:oozie:hive-action:0.3"""
+
     val simpleWf = """
-        <workflow-app name="test" xmlns="uri:oozie:workflow:0.2">
+        <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
             <start to="java_job"/>
             <action name="java_job">
                 <java>
@@ -86,7 +89,7 @@ class XMLVerificationSpec extends Specification {
         """
 
     val renamedSimpleWf = """
-        <workflow-app name="test" xmlns="uri:oozie:workflow:0.2">
+        <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
             <start to="first job"/>
             <action name="first job">
                 <java>
@@ -120,10 +123,10 @@ class XMLVerificationSpec extends Specification {
         """
 
     val simpleHiveWf = """
-        <workflow-app name="test" xmlns="uri:oozie:workflow:0.2">
+        <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="hive_job"/>
         <action name="hive_job">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -150,10 +153,10 @@ class XMLVerificationSpec extends Specification {
         """
 
     val renamedSimpleHiveWf = """
-        <workflow-app name="test" xmlns="uri:oozie:workflow:0.2">
+        <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="first hive job"/>
         <action name="first hive job">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -180,7 +183,7 @@ class XMLVerificationSpec extends Specification {
         """
 
     val simpleDecisionWf = """
-    <workflow-app name="test" xmlns="uri:oozie:workflow:0.2">
+    <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="decision"/>
         <decision name="decision">
             <switch>
@@ -189,7 +192,7 @@ class XMLVerificationSpec extends Specification {
             </switch>
         </decision>
         <action name="hive_node">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -217,7 +220,7 @@ class XMLVerificationSpec extends Specification {
     """
 
     val multipleDecisionCaseWf = """
-    <workflow-app name="test" xmlns="uri:oozie:workflow:0.2">
+    <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="decision"/>
         <decision name="decision">
             <switch>
@@ -227,7 +230,7 @@ class XMLVerificationSpec extends Specification {
             </switch>
         </decision>
         <action name="hive_node">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -248,7 +251,7 @@ class XMLVerificationSpec extends Specification {
             <error to="kill"/>
         </action>
         <action name="hive_node2">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -276,7 +279,7 @@ class XMLVerificationSpec extends Specification {
     """
 
     val multipleDecisionCaseWf2 = """
-    <workflow-app name="test" xmlns="uri:oozie:workflow:0.2">
+    <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="decision"/>
         <decision name="decision">
             <switch>
@@ -286,7 +289,7 @@ class XMLVerificationSpec extends Specification {
             </switch>
         </decision>
         <action name="hive_node">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -307,7 +310,7 @@ class XMLVerificationSpec extends Specification {
             <error to="kill"/>
         </action>
         <action name="hive_node2">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -335,7 +338,7 @@ class XMLVerificationSpec extends Specification {
     """
 
     val reOrderedDecisionCaseWf = """
-    <workflow-app name="test" xmlns="uri:oozie:workflow:0.2">
+    <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="decision"/>
         <decision name="decision">
             <switch>
@@ -345,7 +348,7 @@ class XMLVerificationSpec extends Specification {
             </switch>
         </decision>
         <action name="hive_node">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -366,7 +369,7 @@ class XMLVerificationSpec extends Specification {
             <error to="kill"/>
         </action>
         <action name="hive_node2">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -394,14 +397,14 @@ class XMLVerificationSpec extends Specification {
     """
 
     val forkWf = """
-    <workflow-app name="test" xmlns="uri:oozie:workflow:0.2">
+    <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="fork"/>
         <fork name="fork">
             <path start="second_path"/>
             <path start="first_path"/>
         </fork>
         <action name="first_path">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -419,7 +422,7 @@ class XMLVerificationSpec extends Specification {
             <error to="kill"/>
         </action>
         <action name="second_path">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -443,14 +446,14 @@ class XMLVerificationSpec extends Specification {
     """
 
     val reOrderedForkWf = """
-    <workflow-app name="test" xmlns="uri:oozie:workflow:0.2">
+    <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="fork"/>
         <fork name="fork">
             <path start="path_z1"/>
             <path start="path_2"/>
         </fork>
         <action name="path_z1">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -468,7 +471,7 @@ class XMLVerificationSpec extends Specification {
             <error to="kill"/>
         </action>
         <action name="path_2">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -492,14 +495,14 @@ class XMLVerificationSpec extends Specification {
     """
 
     val differentForkWf = """
-    <workflow-app name="test" xmlns="uri:oozie:workflow:0.2">
+    <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="fork"/>
         <fork name="fork">
             <path start="first_path"/>
             <path start="second_path"/>
         </fork>
         <action name="first_path">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>
@@ -517,7 +520,7 @@ class XMLVerificationSpec extends Specification {
             <error to="kill"/>
         </action>
         <action name="second_path">
-            <hive xmlns="uri:oozie:hive-action:0.2">
+            <hive xmlns="""" + xmlHiveActionNamespace + """">
                 <job-tracker>${jobTracker}</job-tracker>
                 <name-node>${nameNode}</name-node>
                 <job-xml>../hive-site.xml</job-xml>

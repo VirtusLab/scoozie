@@ -10,6 +10,7 @@ import workflow._
 object Conversion {
     val JobTracker = "${jobTracker}"
     val NameNode = "${nameNode}"
+    val xmlHiveActionNamespace = "uri:oozie:hive-action:0.3"
 
     def apply(workflow: Workflow): WORKFLOWu45APP = {
         val flattenedNodes = Flatten(workflow).values.toSet
@@ -42,12 +43,12 @@ object Conversion {
                 jobu45tracker = JobTracker,
                 nameu45node = NameNode,
                 prepare = getPrepare(prep),
-                jobu45xml = jobXml.map(_.mkString("\n")),
+                jobu45xml = jobXml.getOrElse(Seq.empty),
                 configuration = getConfiguration(config),
                 script = fileName,
                 param = params,
                 file = otherFiles.getOrElse(Nil),
-                attributes = Map("@xmlns" -> DataRecord("uri:oozie:hive-action:0.2"))))
+                attributes = Map("@xmlns" -> DataRecord(xmlHiveActionNamespace))))
 
         case JavaJob(mainClass, prep, config, jvmOps, args) =>
             DataRecord(None, Some("java"), JAVA(

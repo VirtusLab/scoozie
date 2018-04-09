@@ -167,10 +167,12 @@ object XMLVerification {
         }
     }
 
+    private val xmlHiveActionNamespace = "uri:oozie:hive-action:0.3"
+
     /*
-     * Takes a workflow class, searches for un-processed Hive xml,
-     * and converts it into a parameterized object
-     */
+         * Takes a workflow class, searches for un-processed Hive xml,
+         * and converts it into a parameterized object
+         */
     def convertHive(wf: WORKFLOWu45APP): WORKFLOWu45APP = {
         val options = wf.workflowu45appoption.map({ wfOption =>
             wfOption.value match {
@@ -178,7 +180,7 @@ object XMLVerification {
                     //if we find an un-parsed Hive action, format it to a case class
                     val action: DataRecord[Any] = actionOption.value match {
                         case elem @ Elem(prefix, "hive", attributes, scope, children @ _*) =>
-                            val deDupedScope = NamespaceBinding(null, "uri:oozie:hive-action:0.2", scala.xml.TopScope)
+                            val deDupedScope = NamespaceBinding(null, xmlHiveActionNamespace, scala.xml.TopScope)
                             val copiedChildren: Seq[Node] = children.toSeq.flatMap(formatHiveNode(_))
                             val newElem = Elem(prefix, "hive", attributes, deDupedScope, copiedChildren: _*)
                             val hiveAction = fromXMLString[ACTIONType](newElem.toString)
@@ -198,7 +200,7 @@ object XMLVerification {
      * Format Hive xml elements to get around all the gross name-spacing issues
      */
     def formatHiveNode(node: Node): Node = {
-        val hiveNameSpacedNode = Elem(node.prefix, node.label, node.attributes, NamespaceBinding(null, "uri:oozie:hive-action:0.2", scala.xml.TopScope), node.child.toSeq.flatMap(formatHiveNode(_)): _*)
+        val hiveNameSpacedNode = Elem(node.prefix, node.label, node.attributes, NamespaceBinding(null, xmlHiveActionNamespace, scala.xml.TopScope), node.child.toSeq.flatMap(formatHiveNode(_)): _*)
         val workflowNameSpacedNode = Elem(node.prefix, node.label, node.attributes, NamespaceBinding(null, "uri:oozie:workflow:0.2", scala.xml.TopScope), node.child.toSeq.flatMap(formatHiveNode(_)): _*)
         val hiveNameSpacedTags = List("job-tracker", "name-node", "prepare", "job-xml", "configuration", "script", "param", "file")
         node match {

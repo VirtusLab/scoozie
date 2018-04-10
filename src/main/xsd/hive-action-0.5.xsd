@@ -17,9 +17,9 @@
   limitations under the License.
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:hive="uri:oozie:hive-action:0.4"
+           xmlns:hive="uri:oozie:hive-action:0.5"
            xmlns:workflow="uri:oozie:workflow:0.4.5" elementFormDefault="qualified"
-           targetNamespace="uri:oozie:hive-action:0.4">
+           targetNamespace="uri:oozie:hive-action:0.5">
 
     <xs:element name="hive" type="hive:ACTION"/>
 
@@ -32,6 +32,7 @@
             <xs:element name="configuration" type="workflow:CONFIGURATION" minOccurs="0" maxOccurs="1"/>
             <xs:element name="script" type="xs:string" minOccurs="1" maxOccurs="1"/>
             <xs:element name="param" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="argument" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="file" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="archive" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>

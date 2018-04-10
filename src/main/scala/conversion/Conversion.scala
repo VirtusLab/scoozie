@@ -38,7 +38,7 @@ object Conversion {
                 prepare = getPrepare(prep),
                 configuration = getConfiguration(config)))
 
-        case HiveJob(fileName, config, params, prep, jobXml, otherFiles) =>
+        case HiveJob(fileName, config, params, prep, argument, jobXml, otherFiles) =>
             DataRecord(None, Some("hive"), ACTIONType(
                 jobu45tracker = Some(JobTracker),
                 nameu45node = Some(NameNode),
@@ -47,6 +47,7 @@ object Conversion {
                 configuration = getConfiguration(config),
                 script = fileName,
                 param = params,
+                argument = argument.toList,
                 file = otherFiles.getOrElse(Nil),
                 attributes = Map("@xmlns" -> DataRecord(xmlHiveActionNamespace))))
 

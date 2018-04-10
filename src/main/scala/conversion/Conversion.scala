@@ -31,12 +31,13 @@ object Conversion {
     }
 
     def convertJob(job: Job): DataRecord[Any] = job match {
-        case MapReduceJob(name, prep, config) =>
+        case MapReduceJob(name, prep, config, configClass) =>
             DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
                 jobu45tracker = Some(JobTracker),
                 nameu45node = Some(NameNode),
                 prepare = getPrepare(prep),
-                configuration = getConfiguration(config)))
+                configuration = getConfiguration(config),
+                configu45class = configClass))
 
         case HiveJob(fileName, config, params, prep, argument, jobXml, otherFiles) =>
             DataRecord(None, Some("hive"), ACTIONType(

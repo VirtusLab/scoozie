@@ -18,8 +18,8 @@ object WfExample {
     val nodes: Seq[DataRecord[WORKFLOWu45APPOption]] = Seq(
         DataRecord(None, Some("action"), ACTION(
             actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
-                jobu45tracker = "{jobTracker}",
-                nameu45node = "${nameNode}",
+                jobu45tracker = Some("${jobTracker}"),
+                nameu45node = Some("${nameNode}"),
                 configuration = Some(CONFIGURATION(Seq(
                     Property("mapred.mapper.class", "org.apache.hadoop.example.IdMapper"),
                     Property("mapred.reducer.class", "org.apache.hadoop.example.IdReducer"),
@@ -36,8 +36,8 @@ object WfExample {
             attributes = Map("@name" -> DataRecord("fork")))),
         DataRecord(None, Some("action"), ACTION(
             actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
-                jobu45tracker = "${jobTracker}",
-                nameu45node = "${nameNode}",
+                jobu45tracker = Some("${jobTracker}"),
+                nameu45node = Some("${nameNode}"),
                 configuration = Some(CONFIGURATION(Seq(
                     Property("mapred.mapper.class", "org.apache.hadoop.example.IdMapper"),
                     Property("mapred.reducer.class", "org.apache.hadoop.example.IdReducer"),
@@ -49,8 +49,8 @@ object WfExample {
             attributes = Map("@name" -> DataRecord("secondjob")))),
         DataRecord(None, Some("action"), ACTION(
             actionoption = DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
-                jobu45tracker = "${jobTracker}",
-                nameu45node = "${nameNode}",
+                jobu45tracker = Some("${jobTracker}"),
+                nameu45node = Some("${nameNode}"),
                 configuration = Some(CONFIGURATION(Seq(
                     Property("mapred.mapper.class", "org.apache.hadoop.example.IdMapper"),
                     Property("mapred.reducer.class", "org.apache.hadoop.example.IdReducer"),
@@ -63,8 +63,8 @@ object WfExample {
         DataRecord(None, Some("join"), JOIN(Map("@name" -> DataRecord("join"), "@to" -> DataRecord("finaljob")))),
         DataRecord(None, Some("action"), ACTION(
             actionoption = DataRecord(None, Some("Map-Reduce"), MAPu45REDUCE(
-                jobu45tracker = "${jobTracker}",
-                nameu45node = "${nameNode}",
+                jobu45tracker = Some("${jobTracker}"),
+                nameu45node = Some("${nameNode}"),
                 configuration = Some(CONFIGURATION(Seq(
                     Property("mapred.mapper.class", "org.apache.hadoop.example.IdMapper"),
                     Property("mapred.reducer.class", "org.apache.hadoop.example.IdReducer"),

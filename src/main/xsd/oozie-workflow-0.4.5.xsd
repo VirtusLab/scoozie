@@ -48,20 +48,13 @@
 
     <xs:complexType name="PARAMETERS">
         <xs:sequence>
-            <xs:element name="property" minOccurs="1" maxOccurs="unbounded">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="name" minOccurs="1" maxOccurs="1" type="xs:string"/>
-                        <xs:element name="value" minOccurs="0" maxOccurs="1" type="xs:string"/>
-                        <xs:element name="description" minOccurs="0" maxOccurs="1" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
+            <xs:element name="property" type="workflow:PROPERTY" minOccurs="1" maxOccurs="unbounded">
+        </xs:element>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="GLOBAL">
-        <xs:sequence>
+    	<xs:sequence>
             <xs:element name="job-tracker" type="xs:string" minOccurs="0" maxOccurs="1"/>
             <xs:element name="name-node" type="xs:string" minOccurs="0" maxOccurs="1"/>
             <xs:element name="job-xml" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
@@ -202,7 +195,7 @@
     </xs:complexType>
 
     <xs:complexType name="FS">
-        <xs:sequence>
+	<xs:sequence>
             <xs:element name="name-node" type="xs:string" minOccurs="0" maxOccurs="1"/>
             <xs:element name="job-xml" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="configuration" type="workflow:CONFIGURATION" minOccurs="0" maxOccurs="1"/>
@@ -226,8 +219,8 @@
             <xs:element name="configuration" type="workflow:CONFIGURATION" minOccurs="0" maxOccurs="1"/>
             <xs:element name="main-class" type="xs:string" minOccurs="1" maxOccurs="1"/>
             <xs:choice minOccurs="0" maxOccurs="1">
-                <xs:element name="java-opts" type="xs:string" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="java-opt" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+            	<xs:element name="java-opts" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            	<xs:element name="java-opt" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
             </xs:choice>
             <xs:element name="arg" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="file" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
@@ -308,7 +301,7 @@
 
     <xs:complexType name="CHGRP">
         <xs:sequence>
-            <xs:element name="recursive" type="workflow:FLAG" minOccurs="0" maxOccurs="1"></xs:element>
+            <xs:element name="recursive" type="workflow:FLAG" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute name="path" type="xs:string" use="required"/>
         <xs:attribute name="group" type="xs:string" use="required"/>
@@ -318,20 +311,21 @@
     <xs:complexType name="CREDENTIALS">
         <xs:sequence minOccurs="0" maxOccurs="unbounded">
             <xs:element name="credential" type="workflow:CREDENTIAL"/>
+		</xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PROPERTY">
+        <xs:sequence>
+            <xs:element name="name" minOccurs="1" maxOccurs="1" type="xs:string"/>
+            <xs:element name="value" minOccurs="1" maxOccurs="1" type="xs:string"/>
+            <xs:element name="description" minOccurs="0" maxOccurs="1" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="CREDENTIAL">
+   	<xs:complexType name="CREDENTIAL">
         <xs:sequence  minOccurs="0" maxOccurs="unbounded" >
-                 <xs:element name="property" minOccurs="1" maxOccurs="unbounded">
-                    <xs:complexType>
-                       <xs:sequence>
-                            <xs:element name="name" minOccurs="1" maxOccurs="1" type="xs:string"/>
-                            <xs:element name="value" minOccurs="1" maxOccurs="1" type="xs:string"/>
-                            <xs:element name="description" minOccurs="0" maxOccurs="1" type="xs:string"/>
-                       </xs:sequence>
-                    </xs:complexType>
-                 </xs:element>
+            <xs:element name="property" type="workflow:PROPERTY" minOccurs="1" maxOccurs="unbounded">
+        </xs:element>
         </xs:sequence>
         <xs:attribute name="name" type="xs:string" use="required"/>
         <xs:attribute name="type" type="xs:string" use="required"/>

@@ -1,14 +1,12 @@
 package com.klout.scoozie
 package verification
 
+import conversion.Configuration._
 import scalaxb._
 import workflow._
 import scala.xml._
 
 object XMLVerification {
-
-    private val xmlHiveActionNamespace = "uri:oozie:hive-action:0.3"
-    private val xmlWorkflowNamespace = "uri:oozie:workflow:0.3"
 
     def verify(referenceString: String, targetString: String): Boolean = {
         val referenceWf = getWorkflow(referenceString)
@@ -114,10 +112,10 @@ object XMLVerification {
         }
     }
 
-    def oneGoesToEnd(refTransition: ACTION_TRANSITION, targetTransition: ACTION_TRANSITION) =
+    def oneGoesToEnd(refTransition: ACTION_TRANSITION, targetTransition: ACTION_TRANSITION): Boolean =
         refTransition.to == "end" || targetTransition.to == "end"
 
-    def bothGoToEnd(refTransition: ACTION_TRANSITION, targetTransition: ACTION_TRANSITION) =
+    def bothGoToEnd(refTransition: ACTION_TRANSITION, targetTransition: ACTION_TRANSITION): Boolean =
         refTransition.to == "end" && targetTransition.to == "end"
 
     def nextNodesAreSame(refOk: ACTION_TRANSITION, targetOk: ACTION_TRANSITION, refError: ACTION_TRANSITION, targetError: ACTION_TRANSITION, refNodes: Map[String, WORKFLOWu45APPOption], targetNodes: Map[String, WORKFLOWu45APPOption]): Boolean = {
@@ -182,8 +180,8 @@ object XMLVerification {
                     val action: DataRecord[Any] = actionOption.value match {
                         case elem @ Elem(prefix, "hive", attributes, scope, children @ _*) =>
                             val deDupedScope = NamespaceBinding(null, xmlHiveActionNamespace, scala.xml.TopScope)
-                            val copiedChildren: Seq[Node] = children.toSeq.flatMap(formatHiveNode(_))
-                            val newElem = Elem(prefix, "hive", attributes, deDupedScope, copiedChildren: _*)
+                            val copiedChildren: Seq[Node] = children.flatMap(formatHiveNode)
+                            val newElem = Elem(prefix, "hive", attributes, deDupedScope, minimizeEmpty = false, copiedChildren: _*)
                             val hiveAction = fromXMLString[ACTIONType](newElem.toString)
                             val processedHiveAction = sortHiveParams(hiveAction)
                             DataRecord(processedHiveAction)
@@ -201,8 +199,8 @@ object XMLVerification {
      * Format Hive xml elements to get around all the gross name-spacing issues
      */
     def formatHiveNode(node: Node): Node = {
-        val hiveNameSpacedNode = Elem(node.prefix, node.label, node.attributes, NamespaceBinding(null, xmlHiveActionNamespace, scala.xml.TopScope), node.child.toSeq.flatMap(formatHiveNode(_)): _*)
-        val workflowNameSpacedNode = Elem(node.prefix, node.label, node.attributes, NamespaceBinding(null, xmlWorkflowNamespace, scala.xml.TopScope), node.child.toSeq.flatMap(formatHiveNode(_)): _*)
+        val hiveNameSpacedNode = Elem(node.prefix, node.label, node.attributes, NamespaceBinding(null, xmlHiveActionNamespace, scala.xml.TopScope), minimizeEmpty = false, node.child.flatMap(formatHiveNode): _*)
+        val workflowNameSpacedNode = Elem(node.prefix, node.label, node.attributes, NamespaceBinding(null, xmlWorkflowNamespace, scala.xml.TopScope), minimizeEmpty = false, node.child.flatMap(formatHiveNode): _*)
         val hiveNameSpacedTags = List("job-tracker", "name-node", "prepare", "job-xml", "configuration", "script", "param", "file")
         node match {
             case Elem(prefix, label, attributes, scope, children @ _*) =>

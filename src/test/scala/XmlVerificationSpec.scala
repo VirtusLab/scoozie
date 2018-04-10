@@ -5,14 +5,16 @@
 package com.klout.scoozie
 package verification
 
+import conversion.Configuration._
 import jobs._
 import dsl._
 import scalaxb._
 import org.specs2.mutable._
+
 import runner._
 import workflow._
 
-class XMLVerificationSpec extends Specification {
+class XmlVerificationSpec extends Specification {
     "XMLVerification" should {
         "give true for exactly the same workflows" in {
             XMLVerification.verify(simpleWf, simpleWf) must_== true
@@ -51,10 +53,7 @@ class XMLVerificationSpec extends Specification {
         }
     }
 
-    private val xmlWorkflowNamespace = "uri:oozie:workflow:0.3"
-    private val xmlHiveActionNamespace = "uri:oozie:hive-action:0.3"
-
-    val simpleWf = """
+    private val simpleWf = """
         <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
             <start to="java_job"/>
             <action name="java_job">
@@ -88,7 +87,7 @@ class XMLVerificationSpec extends Specification {
         </workflow-app>
         """
 
-    val renamedSimpleWf = """
+    private val renamedSimpleWf = """
         <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
             <start to="first job"/>
             <action name="first job">
@@ -122,7 +121,7 @@ class XMLVerificationSpec extends Specification {
         </workflow-app>
         """
 
-    val simpleHiveWf = """
+    private val simpleHiveWf = """
         <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="hive_job"/>
         <action name="hive_job">
@@ -152,7 +151,7 @@ class XMLVerificationSpec extends Specification {
         </workflow-app>
         """
 
-    val renamedSimpleHiveWf = """
+    private val renamedSimpleHiveWf = """
         <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="first hive job"/>
         <action name="first hive job">
@@ -182,7 +181,7 @@ class XMLVerificationSpec extends Specification {
         </workflow-app>
         """
 
-    val simpleDecisionWf = """
+    private val simpleDecisionWf = """
     <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="decision"/>
         <decision name="decision">
@@ -219,7 +218,7 @@ class XMLVerificationSpec extends Specification {
     </workflow-app>
     """
 
-    val multipleDecisionCaseWf = """
+    private val multipleDecisionCaseWf = """
     <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="decision"/>
         <decision name="decision">
@@ -278,7 +277,7 @@ class XMLVerificationSpec extends Specification {
     </workflow-app>
     """
 
-    val multipleDecisionCaseWf2 = """
+    private val multipleDecisionCaseWf2 = """
     <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="decision"/>
         <decision name="decision">
@@ -337,7 +336,7 @@ class XMLVerificationSpec extends Specification {
     </workflow-app>
     """
 
-    val reOrderedDecisionCaseWf = """
+    private val reOrderedDecisionCaseWf = """
     <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="decision"/>
         <decision name="decision">
@@ -396,7 +395,7 @@ class XMLVerificationSpec extends Specification {
     </workflow-app>
     """
 
-    val forkWf = """
+    private val forkWf = """
     <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="fork"/>
         <fork name="fork">
@@ -445,7 +444,7 @@ class XMLVerificationSpec extends Specification {
     </workflow-app>
     """
 
-    val reOrderedForkWf = """
+    private val reOrderedForkWf = """
     <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="fork"/>
         <fork name="fork">
@@ -494,7 +493,7 @@ class XMLVerificationSpec extends Specification {
     </workflow-app>
     """
 
-    val differentForkWf = """
+    private val differentForkWf = """
     <workflow-app name="test" xmlns="""" + xmlWorkflowNamespace + """">
         <start to="fork"/>
         <fork name="fork">

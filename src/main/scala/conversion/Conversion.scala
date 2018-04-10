@@ -6,11 +6,11 @@ import com.klout.scoozie.jobs._
 import com.klout.scoozie.verification._
 import scalaxb._
 import workflow._
+import Configuration._
 
 object Conversion {
     val JobTracker = "${jobTracker}"
     val NameNode = "${nameNode}"
-    val xmlHiveActionNamespace = "uri:oozie:hive-action:0.3"
 
     def apply(workflow: Workflow): WORKFLOWu45APP = {
         val flattenedNodes = Flatten(workflow).values.toSet
@@ -40,8 +40,8 @@ object Conversion {
 
         case HiveJob(fileName, config, params, prep, jobXml, otherFiles) =>
             DataRecord(None, Some("hive"), ACTIONType(
-                jobu45tracker = JobTracker,
-                nameu45node = NameNode,
+                jobu45tracker = Some(JobTracker),
+                nameu45node = Some(NameNode),
                 prepare = getPrepare(prep),
                 jobu45xml = jobXml.getOrElse(Seq.empty),
                 configuration = getConfiguration(config),

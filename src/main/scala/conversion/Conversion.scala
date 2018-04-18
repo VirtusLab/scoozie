@@ -6,6 +6,7 @@ import com.klout.scoozie.jobs._
 import com.klout.scoozie.verification._
 import scalaxb._
 import workflow._
+import Configuration._
 
 object Conversion {
     val JobTracker = "${jobTracker}"
@@ -30,58 +31,60 @@ object Conversion {
     }
 
     def convertJob(job: Job): DataRecord[Any] = job match {
-        case MapReduceJob(name, prep, config) =>
+        case MapReduceJob(name, prep, config, configClass) =>
             DataRecord(None, Some("map-reduce"), MAPu45REDUCE(
-                jobu45tracker = JobTracker,
-                nameu45node = NameNode,
+                jobu45tracker = Some(JobTracker),
+                nameu45node = Some(NameNode),
                 prepare = getPrepare(prep),
-                configuration = getConfiguration(config)))
+                configuration = getConfiguration(config),
+                configu45class = configClass))
 
-        case HiveJob(fileName, config, params, prep, jobXml, otherFiles) =>
+        case HiveJob(fileName, config, params, prep, argument, jobXml, otherFiles) =>
             DataRecord(None, Some("hive"), ACTIONType(
-                jobu45tracker = JobTracker,
-                nameu45node = NameNode,
+                jobu45tracker = Some(JobTracker),
+                nameu45node = Some(NameNode),
                 prepare = getPrepare(prep),
-                jobu45xml = jobXml match {
-                    case Some(xml) => xml
-                    case _         => Seq[String]()
-                },
+                jobu45xml = jobXml.getOrElse(Seq.empty),
                 configuration = getConfiguration(config),
                 script = fileName,
                 param = params,
+                argument = argument.toList,
                 file = otherFiles.getOrElse(Nil),
-                attributes = Map("@xmlns" -> DataRecord("uri:oozie:hive-action:0.2"))))
+                attributes = Map("@xmlns" -> DataRecord(xmlHiveActionNamespace))))
 
-        case JavaJob(mainClass, prep, config, jvmOps, args) =>
+        case JavaJob(mainClass, prep, config, jvmOps, jvmOp, args) =>
             DataRecord(None, Some("java"), JAVA(
-                jobu45tracker = JobTracker,
-                nameu45node = NameNode,
+                jobu45tracker = Some(JobTracker),
+                nameu45node = Some(NameNode),
                 mainu45class = mainClass,
                 prepare = getPrepare(prep),
                 configuration = getConfiguration(config),
-                javau45opts = jvmOps,
+                javaoption = jvmOp.map(op => DataRecord(None, Some("jvmOp"), op)) ++ jvmOps.map(op => DataRecord(None, Some("jvmOp"), op)),
                 arg = args))
 
         //limitation: tasks must be of the same type
         case FsJob(name, tasks) =>
             DataRecord(None, Some("fs"), FS(
-                delete = tasks flatMap {
-                    case Rm(path) => Some(DELETE(Map("@path" -> DataRecord(path))))
-                    case _        => None
-                },
-                mkdir = tasks flatMap {
-                    case MkDir(path) => Some(MKDIR(Map("@path" -> DataRecord(path))))
-                    case _           => None
-                },
-                move = tasks flatMap {
-                    case Mv(from, to) => Some(MOVE(Map("@source" -> DataRecord(from), "@target" -> DataRecord(to))))
-                    case _            => None
-                },
-                chmod = tasks flatMap {
-                    case ChMod(path, permissions, dirFiles) => Some(CHMOD(Map(
-                        "@path" -> DataRecord(path),
-                        "@permissions" -> DataRecord(permissions),
-                        "@dir-files" -> DataRecord(dirFiles))))
+                nameu45node = Some(NameNode),
+                jobu45xml = Nil,
+                configuration = None,
+                fsoption = tasks flatMap {
+                    case Rm(path)     => Some(DataRecord(None, Some("rm"), DELETE(Map("@path" -> DataRecord(path)))))
+                    case MkDir(path)  => Some(DataRecord(None, Some("mkdir"), MKDIR(Map("@path" -> DataRecord(path)))))
+                    case Mv(from, to) => Some(DataRecord(None, Some("mv"), MOVE(Map("@source" -> DataRecord(from), "@target" -> DataRecord(to)))))
+                    case ChMod(recursive, path, permissions, dirFiles) => Some(DataRecord(None, Some("chmod"), CHMOD(
+                        if (recursive) Some(FLAG()) else None,
+                        Map(
+                            "@path" -> DataRecord(path),
+                            "@permissions" -> DataRecord(permissions),
+                            "@dir-files" -> DataRecord(dirFiles)))))
+                    case Touchz(path) => Some(DataRecord(None, Some("touchz"), TOUCHZ(Map("@path" -> DataRecord(path)))))
+                    case ChGrp(recursive, path, group, dirFiles) => Some(DataRecord(None, Some("chgrp"), CHGRP(
+                        if (recursive) Some(FLAG()) else None,
+                        Map(
+                            "@path" -> DataRecord(path),
+                            "@group" -> DataRecord(group),
+                            "@dir-files" -> DataRecord(dirFiles)))))
                     case _ => None
                 }))
         case _ => ???

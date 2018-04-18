@@ -8,6 +8,7 @@ case class HiveJob(
     configuration: ArgList             = Nil,
     parameters:    List[String]        = List.empty,
     prepare:       List[FsTask]        = List.empty,
+    argument:      Option[String]      = None,
     jobXml:        Option[Seq[String]] = None,
     otherFiles:    Option[Seq[String]] = None) extends Job {
     val dotIndex: Int = fileName.indexOf(".")

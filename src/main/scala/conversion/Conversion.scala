@@ -5,7 +5,8 @@ import com.klout.scoozie.dsl._
 import com.klout.scoozie.jobs._
 import com.klout.scoozie.verification._
 import scalaxb._
-import workflow._
+import oozie.workflow._
+import protocol._
 import Configuration._
 
 object Conversion {

@@ -2,7 +2,6 @@
  // Copyright (C) 2013 Klout Inc. <http://www.klout.com>
  ///
 
-import ScalaxbKeys._
 import scalariform.formatter.preferences._
 import sbtassembly.{MergeStrategy, PathList}
 
@@ -55,9 +54,14 @@ scalariformPreferences := scalariformPreferences.value
   .setPreference(AlignSingleLineCaseStatements, true)
   .setPreference(PreserveSpaceBeforeArguments, true)
 
-//todo update scalaxb to 1.5.2
 enablePlugins(ScalaxbPlugin)
-scalaxbPackageName in (Compile, scalaxb) := "workflow"
+scalaxbPackageName in (Compile, scalaxb) := "oozie"
+scalaxbProtocolPackageName in (Compile, scalaxb) := Some("protocol")
+scalaxbPackageNames in (Compile, scalaxb) := Map(
+  uri("uri:oozie:workflow:0.5") -> "oozie.workflow",
+  uri("uri:oozie:hive-action:0.5") -> "oozie.workflow",
+  uri("uri:oozie:coordinator:0.4") -> "oozie.coordinator"
+)
 
 scalacOptions ++= Seq(
     "-unchecked",

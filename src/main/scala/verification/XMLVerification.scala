@@ -3,7 +3,8 @@ package verification
 
 import conversion.Configuration._
 import scalaxb._
-import workflow._
+import oozie.workflow._
+import protocol._
 import scala.xml._
 
 object XMLVerification {

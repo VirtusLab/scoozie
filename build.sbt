@@ -59,8 +59,7 @@ scalaxbPackageName in (Compile, scalaxb) := "oozie"
 scalaxbProtocolPackageName in (Compile, scalaxb) := Some("protocol")
 scalaxbPackageNames in (Compile, scalaxb) := Map(
   uri("uri:oozie:workflow:0.5") -> "oozie.workflow",
-  uri("uri:oozie:hive-action:0.5") -> "oozie.hive",
-  uri("uri:oozie:coordinator:0.4") -> "oozie.coordinator"
+  uri("uri:oozie:hive-action:0.5") -> "oozie.hive"
 )
 
 scalacOptions ++= Seq(

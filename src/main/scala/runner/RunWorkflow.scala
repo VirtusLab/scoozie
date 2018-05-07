@@ -2,13 +2,13 @@
  * Copyright (C) 2013 Klout Inc. <http://www.klout.com>
  */
 
-package com.klout.scoozie
+package com.virtuslab.scoozie
 package runner
 
 import java.util.Date
 
-import com.klout.scoozie.conversion._
-import com.klout.scoozie.dsl._
+import com.virtuslab.scoozie.conversion._
+import com.virtuslab.scoozie.dsl._
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{ FSDataOutputStream, FileSystem, Path }
 import org.apache.oozie.client.{ OozieClient, WorkflowAction, WorkflowJob }

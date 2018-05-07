@@ -1,7 +1,7 @@
-package com.klout.scoozie
+package com.virtuslab.scoozie
 package jobs
 
-import com.klout.scoozie.dsl.Job
+import com.virtuslab.scoozie.dsl.Job
 
 case class JavaJob(mainClass: String, prepare: List[FsTask] = List.empty, configuration: ArgList = Nil, jvmOps: Option[String] = None, jvmOp: Seq[String] = Nil, args: List[String] = Nil) extends Job {
     val domain: String = mainClass.substring(mainClass.lastIndexOf(".") + 1)

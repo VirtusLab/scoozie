@@ -1,4 +1,4 @@
-package com.klout.scoozie
+package com.virtuslab.scoozie
 package conversion
 
 case class RefWrap[T <: AnyRef](value: T) {

@@ -1,8 +1,8 @@
-package com.klout.scoozie
+package com.virtuslab.scoozie
 package conversion
 
 import com.google.common.base._
-import com.klout.scoozie.dsl.DecisionNode
+import com.virtuslab.scoozie.dsl.DecisionNode
 import scalaxb._
 import oozie.workflow._
 import protocol._

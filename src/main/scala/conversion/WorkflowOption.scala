@@ -1,7 +1,7 @@
-package com.klout.scoozie
+package com.virtuslab.scoozie
 package conversion
 
-import com.klout.scoozie.dsl.{ DecisionNode, Job }
+import com.virtuslab.scoozie.dsl.{ DecisionNode, Job }
 
 sealed trait WorkflowOption
 

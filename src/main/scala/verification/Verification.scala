@@ -1,7 +1,7 @@
-package com.klout.scoozie
+package com.virtuslab.scoozie
 package verification
 
-import com.klout.scoozie.conversion._
+import com.virtuslab.scoozie.conversion._
 
 import scala.io.Source
 

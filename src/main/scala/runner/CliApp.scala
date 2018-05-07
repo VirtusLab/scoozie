@@ -1,9 +1,9 @@
-package com.virtuslab.scoozie
+package org.virtuslab.scoozie
 package runner
 
 import java.io.{ FileWriter, PrintWriter }
 
-import com.virtuslab.scoozie.dsl.Workflow
+import org.virtuslab.scoozie.dsl.Workflow
 
 import scala.io.Source
 

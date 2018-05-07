@@ -1,4 +1,4 @@
-package com.virtuslab.scoozie
+package org.virtuslab.scoozie
 package dsl
 
 sealed trait Work {

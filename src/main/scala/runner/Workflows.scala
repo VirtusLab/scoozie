@@ -1,8 +1,8 @@
-package com.virtuslab.scoozie
+package org.virtuslab.scoozie
 package runner
 
-import com.virtuslab.scoozie.dsl._
-import com.virtuslab.scoozie.jobs._
+import org.virtuslab.scoozie.dsl._
+import org.virtuslab.scoozie.jobs._
 
 object Workflows {
     def MaxwellPipeline = {

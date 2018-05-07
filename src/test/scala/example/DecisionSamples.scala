@@ -1,8 +1,8 @@
-package com.virtuslab.scoozie
+package org.virtuslab.scoozie
 package example
 
-import com.virtuslab.scoozie.dsl._
-import com.virtuslab.scoozie.jobs.{ MapReduceJob, NoOpJob }
+import org.virtuslab.scoozie.dsl._
+import org.virtuslab.scoozie.jobs.{ MapReduceJob, NoOpJob }
 
 object DecisionSamples {
 

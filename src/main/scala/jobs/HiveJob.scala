@@ -1,7 +1,7 @@
-package com.virtuslab.scoozie
+package org.virtuslab.scoozie
 package jobs
 
-import com.virtuslab.scoozie.dsl.Job
+import org.virtuslab.scoozie.dsl.Job
 
 case class HiveJob(
     fileName:      String,

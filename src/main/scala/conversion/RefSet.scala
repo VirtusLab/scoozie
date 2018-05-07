@@ -1,4 +1,4 @@
-package com.klout.scoozie
+package org.virtuslab.scoozie
 package conversion
 
 case class RefSet[A <: AnyRef](vals: Seq[A]) extends Set[A] {

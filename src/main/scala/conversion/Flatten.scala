@@ -1,7 +1,7 @@
-package com.klout.scoozie
+package org.virtuslab.scoozie
 package conversion
 
-import com.klout.scoozie.dsl._
+import org.virtuslab.scoozie.dsl._
 
 import scala.collection.immutable
 

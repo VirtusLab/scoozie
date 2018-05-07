@@ -1,4 +1,4 @@
-package com.klout.scoozie
+package org.virtuslab.scoozie
 package dsl
 
 import scala.util.matching.Regex

@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Klout Inc. <http://www.klout.com>
  */
 
-package com.klout.scoozie
+package org.virtuslab.scoozie
 package verification
 
 import org.specs2.mutable._

@@ -1,9 +1,9 @@
-package com.klout.scoozie
+package org.virtuslab.scoozie
 package conversion
 
-import com.klout.scoozie.dsl._
-import com.klout.scoozie.jobs._
-import com.klout.scoozie.verification._
+import org.virtuslab.scoozie.dsl._
+import org.virtuslab.scoozie.jobs._
+import org.virtuslab.scoozie.verification._
 import scalaxb._
 import oozie.workflow._
 import oozie.hive

@@ -17,7 +17,7 @@ assemblyMergeStrategy in assembly := {
   case PathList("META-INF", xs @ _*) =>
     xs map {_.toLowerCase} match {
       case "services" :: xs => MergeStrategy.filterDistinctLines
-      case ("spring.schemas" :: Nil) | ("spring.handlers" :: Nil) => MergeStrategy.filterDistinctLines
+      case "spring.schemas" :: Nil | "spring.handlers" :: Nil => MergeStrategy.filterDistinctLines
       case _ => MergeStrategy.discard
     }
   case _                       => MergeStrategy.first
@@ -59,7 +59,7 @@ scalaxbPackageName in (Compile, scalaxb) := "oozie"
 scalaxbProtocolPackageName in (Compile, scalaxb) := Some("protocol")
 scalaxbPackageNames in (Compile, scalaxb) := Map(
   uri("uri:oozie:workflow:0.5") -> "oozie.workflow",
-  uri("uri:oozie:hive-action:0.5") -> "oozie.workflow",
+  uri("uri:oozie:hive-action:0.5") -> "oozie.hive",
   uri("uri:oozie:coordinator:0.4") -> "oozie.coordinator"
 )
 

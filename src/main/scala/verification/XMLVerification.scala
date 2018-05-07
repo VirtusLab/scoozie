@@ -4,6 +4,7 @@ package verification
 import conversion.Configuration._
 import scalaxb._
 import oozie.workflow._
+import oozie.hive
 import protocol._
 import scala.xml._
 
@@ -86,9 +87,9 @@ object XMLVerification {
         }
     }
 
-    def sortHiveParams(hive: ACTIONType): ACTIONType = {
-        val sortedParams = hive.param.sorted
-        hive.copy(param = sortedParams)
+    def sortHiveParams(hiveAction: hive.ACTION): hive.ACTION = {
+        val sortedParams = hiveAction.param.sorted
+        hiveAction.copy(param = sortedParams)
     }
 
     def fromXMLString[A: XMLFormat](xmlString: String): A = {
@@ -183,7 +184,7 @@ object XMLVerification {
                             val deDupedScope = NamespaceBinding(null, xmlHiveActionNamespace, scala.xml.TopScope)
                             val copiedChildren: Seq[Node] = children.flatMap(formatHiveNode)
                             val newElem = Elem(prefix, "hive", attributes, deDupedScope, minimizeEmpty = false, copiedChildren: _*)
-                            val hiveAction = fromXMLString[ACTIONType](newElem.toString)
+                            val hiveAction = fromXMLString[hive.ACTION](newElem.toString)
                             val processedHiveAction = sortHiveParams(hiveAction)
                             DataRecord(processedHiveAction)
                         case _ =>

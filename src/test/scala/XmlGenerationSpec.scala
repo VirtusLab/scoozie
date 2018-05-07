@@ -7,9 +7,11 @@ package conversion
 
 import jobs._
 import dsl._
-import workflow._
+import oozie.workflow._
+import protocol._
 import scalaxb._
 import org.specs2.mutable._
+import Configuration._
 import runner.{ RunWorkflow, _ }
 
 class XMLGenerationSpec extends Specification {
@@ -29,8 +31,6 @@ class XMLGenerationSpec extends Specification {
             RunWorkflow.getXMLString(wf) must_== postProcessedXml
         }
     }
-
-    private val xmlWorkflowNamespace = "uri:oozie:workflow:0.3"
 
     val postProcessedXml = """<workflow-app name="test-post-processing" xmlns="""" + xmlWorkflowNamespace + """">
     <start to="mr_first"/>

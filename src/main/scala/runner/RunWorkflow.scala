@@ -13,11 +13,12 @@ import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{ FSDataOutputStream, FileSystem, Path }
 import org.apache.oozie.client.{ OozieClient, WorkflowAction, WorkflowJob }
 import scalaxb._
-import workflow._
+import oozie.workflow._
+import protocol._
+import conversion.Configuration._
 
 object RunWorkflow {
     val SleepInterval = 5000
-    private val xmlWorkflowNamespace = "uri:oozie:workflow:0.3"
 
     def sequence[T](workflowMap: Map[T, AsyncOozieWorkflow]): Map[T, Either[OozieError, OozieSuccess]] = {
         val workflows = workflowMap map (_._2)

@@ -4,7 +4,8 @@ package conversion
 import com.google.common.base._
 import com.klout.scoozie.dsl.DecisionNode
 import scalaxb._
-import workflow._
+import oozie.workflow._
+import protocol._
 
 case class GraphNode(
     var name:           String,

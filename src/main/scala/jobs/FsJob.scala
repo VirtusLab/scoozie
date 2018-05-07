@@ -1,7 +1,7 @@
-package com.klout.scoozie
+package com.virtuslab.scoozie
 package jobs
 
-import com.klout.scoozie.dsl.Job
+import com.virtuslab.scoozie.dsl.Job
 
 // Node: There is a limitation with the way scalaxb creates the FS Task
 // case classes from workflow.xsd: It treats the different task types as

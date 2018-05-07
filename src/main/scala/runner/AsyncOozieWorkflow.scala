@@ -1,4 +1,4 @@
-package com.klout.scoozie
+package com.virtuslab.scoozie
 package runner
 
 import org.apache.oozie.client.{ WorkflowAction, WorkflowJob }

@@ -1,7 +1,7 @@
-package com.klout.scoozie
+package com.virtuslab.scoozie
 package runner
 
-import com.klout.scoozie.dsl.Workflow
+import com.virtuslab.scoozie.dsl.Workflow
 
 abstract class ScoozieApp(
     wf:             Workflow,

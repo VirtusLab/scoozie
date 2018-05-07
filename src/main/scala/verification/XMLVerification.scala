@@ -1,4 +1,4 @@
-package com.klout.scoozie
+package com.virtuslab.scoozie
 package verification
 
 import conversion.Configuration._

@@ -2,7 +2,6 @@
  // Copyright (C) 2013 Klout Inc. <http://www.klout.com>
  ///
 
-import ScalaxbKeys._
 import scalariform.formatter.preferences._
 import sbtassembly.{MergeStrategy, PathList}
 
@@ -18,7 +17,7 @@ assemblyMergeStrategy in assembly := {
   case PathList("META-INF", xs @ _*) =>
     xs map {_.toLowerCase} match {
       case "services" :: xs => MergeStrategy.filterDistinctLines
-      case ("spring.schemas" :: Nil) | ("spring.handlers" :: Nil) => MergeStrategy.filterDistinctLines
+      case "spring.schemas" :: Nil | "spring.handlers" :: Nil => MergeStrategy.filterDistinctLines
       case _ => MergeStrategy.discard
     }
   case _                       => MergeStrategy.first
@@ -37,7 +36,7 @@ libraryDependencies ++= Seq(
     "org.apache.oozie"       % "oozie-client"              % oozieV % "provided",
     "org.apache.oozie"       % "oozie-core"                % oozieV % "provided",
     "org.apache.hadoop"      % "hadoop-common"             % hadoopV % "provided"
-)
+).map(_ exclude("javax.jms", "jms"))
 
 
 resolvers ++= Seq(
@@ -55,9 +54,13 @@ scalariformPreferences := scalariformPreferences.value
   .setPreference(AlignSingleLineCaseStatements, true)
   .setPreference(PreserveSpaceBeforeArguments, true)
 
-//todo update scalaxb to 1.5.2
 enablePlugins(ScalaxbPlugin)
-scalaxbPackageName in (Compile, scalaxb) := "workflow"
+scalaxbPackageName in (Compile, scalaxb) := "oozie"
+scalaxbProtocolPackageName in (Compile, scalaxb) := Some("protocol")
+scalaxbPackageNames in (Compile, scalaxb) := Map(
+  uri("uri:oozie:workflow:0.5") -> "oozie.workflow",
+  uri("uri:oozie:hive-action:0.5") -> "oozie.hive"
+)
 
 scalacOptions ++= Seq(
     "-unchecked",

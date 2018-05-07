@@ -5,7 +5,8 @@ package com.klout.scoozie
 package example
 
 import scalaxb._
-import workflow._
+import oozie.workflow._
+import protocol._
 
 /*
  * Example from the Oozie Website:

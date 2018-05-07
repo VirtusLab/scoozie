@@ -7,7 +7,8 @@ package conversion
 
 import jobs._
 import dsl._
-import workflow._
+import oozie.workflow._
+import protocol._
 import scalaxb._
 import org.specs2.mutable._
 

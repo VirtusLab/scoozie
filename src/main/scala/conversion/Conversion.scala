@@ -5,7 +5,9 @@ import com.klout.scoozie.dsl._
 import com.klout.scoozie.jobs._
 import com.klout.scoozie.verification._
 import scalaxb._
-import workflow._
+import oozie.workflow._
+import oozie.hive
+import protocol._
 import Configuration._
 
 object Conversion {
@@ -36,16 +38,16 @@ object Conversion {
                 jobu45tracker = Some(JobTracker),
                 nameu45node = Some(NameNode),
                 prepare = getPrepare(prep),
-                configuration = getConfiguration(config),
+                configuration = getWorkflowConfiguration(config),
                 configu45class = configClass))
 
         case HiveJob(fileName, config, params, prep, argument, jobXml, otherFiles) =>
-            DataRecord(None, Some("hive"), ACTIONType(
+            DataRecord(None, Some("hive"), hive.ACTION(
                 jobu45tracker = Some(JobTracker),
                 nameu45node = Some(NameNode),
                 prepare = getPrepare(prep),
                 jobu45xml = jobXml.getOrElse(Seq.empty),
-                configuration = getConfiguration(config),
+                configuration = getHiveConfiguration(config),
                 script = fileName,
                 param = params,
                 argument = argument.toList,
@@ -58,7 +60,7 @@ object Conversion {
                 nameu45node = Some(NameNode),
                 mainu45class = mainClass,
                 prepare = getPrepare(prep),
-                configuration = getConfiguration(config),
+                configuration = getWorkflowConfiguration(config),
                 javaoption = jvmOp.map(op => DataRecord(None, Some("jvmOp"), op)) ++ jvmOps.map(op => DataRecord(None, Some("jvmOp"), op)),
                 arg = args))
 
@@ -104,9 +106,16 @@ object Conversion {
         else
             None
     }
-    def getConfiguration(config: ArgList): Option[CONFIGURATION] = {
+    def getWorkflowConfiguration(config: ArgList): Option[CONFIGURATION] = {
         if (config.nonEmpty)
             Some(CONFIGURATION(config map (tuple => Property(tuple._1, tuple._2))))
+        else
+            None
+    }
+
+    def getHiveConfiguration(config: ArgList): Option[hive.CONFIGURATION] = {
+        if (config.nonEmpty)
+            Some(hive.CONFIGURATION(config map (tuple => hive.Property(tuple._1, tuple._2))))
         else
             None
     }

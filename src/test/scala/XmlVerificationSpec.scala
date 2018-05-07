@@ -12,7 +12,8 @@ import scalaxb._
 import org.specs2.mutable._
 
 import runner._
-import workflow._
+import oozie.workflow._
+import protocol._
 
 class XmlVerificationSpec extends Specification {
     "XMLVerification" should {

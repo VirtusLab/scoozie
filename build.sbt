@@ -36,7 +36,7 @@ libraryDependencies ++= Seq(
     "org.apache.oozie"       % "oozie-client"              % oozieV % "provided",
     "org.apache.oozie"       % "oozie-core"                % oozieV % "provided",
     "org.apache.hadoop"      % "hadoop-common"             % hadoopV % "provided"
-)
+).map(_ exclude("javax.jms", "jms"))
 
 
 resolvers ++= Seq(

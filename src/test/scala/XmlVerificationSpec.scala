@@ -1,8 +1,8 @@
 /**
- * Copyright (C) 2013 Klout Inc. <http://www.klout.com>
+ * Copyright (C) 2018 Virtus Lab sp. z o.o. (Ltd.) <https://virtuslab.com>
  */
 
-package com.klout.scoozie
+package org.virtuslab.scoozie
 package verification
 
 import conversion.Configuration._

@@ -1,11 +1,11 @@
 /**
- * Copyright (C) 2013 Klout Inc. <http://www.klout.com>
+ * Copyright (C) 2018 Virtus Lab sp. z o.o. (Ltd.) <https://virtuslab.com>
  */
-package com.klout.scoozie
+package org.virtuslab.scoozie
 package example
 
-import com.klout.scoozie.dsl._
-import com.klout.scoozie.jobs.{ FsJob, MapReduceJob, MkDir }
+import org.virtuslab.scoozie.dsl._
+import org.virtuslab.scoozie.jobs.{ FsJob, MapReduceJob, MkDir }
 
 object SimpleSamples {
     def EmptyWorkflow = {

@@ -1,5 +1,5 @@
 ///
- // Copyright (C) 2013 Klout Inc. <http://www.klout.com>
+ // Copyright (C) 2018 Virtus Lab sp. z o.o. (Ltd.) <https://virtuslab.com>
  ///
 
 import scalariform.formatter.preferences._
@@ -7,7 +7,7 @@ import sbtassembly.{MergeStrategy, PathList}
 
 name := "scoozie"
 
-organization := "com.klout"
+organization := "org.virtuslab"
 
 version := "0.6.0-SNAPSHOT"
 

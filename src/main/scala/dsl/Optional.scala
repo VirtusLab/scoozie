@@ -1,4 +1,4 @@
-package com.klout.scoozie
+package org.virtuslab.scoozie
 package dsl
 
 object Optional {

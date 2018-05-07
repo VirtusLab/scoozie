@@ -1,4 +1,4 @@
-scoozie
+scoozie [![Build Status](https://travis-ci.org/VirtusLab/scoozie.svg?branch=master)](https://travis-ci.org/VirtusLab/scoozie)
 =======
 
 Scala DSL on top of Oozie XML

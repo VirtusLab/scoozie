@@ -7,7 +7,7 @@ import sbtassembly.{MergeStrategy, PathList}
 
 name := "scoozie"
 
-organization := "com.virtuslab"
+organization := "org.virtuslab"
 
 version := "0.6.0-SNAPSHOT"
 

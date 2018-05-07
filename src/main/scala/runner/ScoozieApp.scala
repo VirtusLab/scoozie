@@ -1,7 +1,7 @@
-package com.virtuslab.scoozie
+package org.virtuslab.scoozie
 package runner
 
-import com.virtuslab.scoozie.dsl.Workflow
+import org.virtuslab.scoozie.dsl.Workflow
 
 abstract class ScoozieApp(
     wf:             Workflow,
@@ -9,13 +9,13 @@ abstract class ScoozieApp(
     postprocessing: Option[XmlPostProcessing] = Some(XmlPostProcessing.Default)) extends App {
 
     /*
-     * Usage is java -cp <...> com.klout.scoozie.ObjectName today
+     * Usage is java -cp <...> org.virtuslab.scoozie.ObjectName today
      * -todayString=foo2 -yesterdayString=foo3 ...
      */
     override def main(args: Array[String]) {
         val argString = ("" /: args)(_ + _.toString)
         //set up properties / configuration
-        val usage = "java -cp <...> com.klout.scoozie.ObjectName -todayString=foo -yesterdayString=foo ..."
+        val usage = "java -cp <...> org.virtuslab.scoozie.ObjectName -todayString=foo -yesterdayString=foo ..."
         var propertyMap = Helpers.readProperties(propertiesFile)
         if (args nonEmpty) {
             args foreach { arg =>

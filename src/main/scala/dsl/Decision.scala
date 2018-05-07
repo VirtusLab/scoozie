@@ -1,4 +1,4 @@
-package com.virtuslab.scoozie
+package org.virtuslab.scoozie
 package dsl
 
 case class Decision(predicates: List[(String, Predicate)]) {

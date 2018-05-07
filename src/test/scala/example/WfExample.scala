@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013 Klout Inc. <http://www.klout.com>
  */
-package com.virtuslab.scoozie
+package org.virtuslab.scoozie
 package example
 
 import scalaxb._
